@@ -33,38 +33,12 @@ function createMenu() {
     document.querySelector("main").innerHTML +=
         `
     <div class="user-quizzes">
-        <span class="quizz-button-small">
-            Seus Quizzes
-            <ion-icon onclick="createQuizz()" name="add-circle"></ion-icon>
-        </span>
-        <div class="thumb-box">
-        <!--  <div class="quizz-button-big">
-                <span>
-                    Você não criou nenhum quizz ainda :(
-                </span>
-                <button onclick="createQuizz()">
-                    Criar Quizz
-                </button>
-            </div>--> 
-            <div class="user-quizz">
-                O quão Potterhead é você?
-            </div>
-            <div class="user-quizz">
-                É ex-BBB ou ex-De férias com o Ex?
-            </div>
-        </div>
+        
     </div>
     <div class="list-quizzes">
-        <ul>Liste todos os Quizzes
-
-            <li class="user-quizz">
-                É ex-BBB ou ex-De férias com o Ex?
-
-            </li>
-
+    Liste todos os Quizzes
+        <ul class="list">
         </ul>
-
-
      </div>
 
     `
@@ -74,7 +48,9 @@ function createMenu() {
 
     // chama uma função aqui pra carregar todos os quizzes do usuário na thumb-box
     // thumb-box de thumbnail + vou deixar a função comentada pra depois
-    // fillUserQuizz()
+
+    fillUserQuizz()
+    listQuizzes()
 }
 
 function userQuizzes() {
@@ -126,6 +102,62 @@ function createScreenTwo(formData) {
     eraseContent();
 
 
+}
+
+function listQuizzes (){
+    const promisse = axios.get(API_URL + "/quizzes")
+    promisse.then(printQuizzes)
+
+}
+
+function fillUserQuizz(){
+    const userQuizzes = document.querySelector(".user-quizzes")
+
+
+        if(localStorage.length === 0 ){
+
+            userQuizzes.innerHTML = `
+            <div class="thumb-box">
+                <div class="quizz-button-big">
+                    <span>
+                        Você não criou nenhum quizz ainda :(
+                    </span>
+                    <button onclick="createQuizz()">
+                        Criar Quizz
+                    </button>
+                </div>
+            </div>
+            `
+        } else {
+            userQuizzes.innerHTML += `
+        <span class="quizz-button-small">
+            Seus Quizzes
+            <ion-icon onclick="createQuizz()" name="add-circle" alt="Criar Quizz"></ion-icon>
+        </span>
+            <ul class="userQuizzesList">
+                <li class="user-quizz">
+                    <img class="quizImg" src="../images/Rectangle\ 35.png" alt="">
+                    <h4 class="quizz-title">Titulo Teste</h4> 
+                </li>
+            </ul>`
+        }      
+}
+
+function printQuizzes (promisse) {
+    
+    const quizzArr = promisse.data
+    const listAllQuizzesDOM = document.querySelector(".list")
+    console.log(quizzArr)
+    
+    for(let i = 0; i < quizzArr.length; i++){
+        listAllQuizzesDOM.innerHTML += ` 
+        
+        <li class="user-quizz">
+            <img class="quizImg" src="${quizzArr[i].image}" alt="">
+            <h4 class="quizz-title">${quizzArr[i].title}</h4> 
+        </li>`
+    }
+    
 }
 
 loadHeader();
