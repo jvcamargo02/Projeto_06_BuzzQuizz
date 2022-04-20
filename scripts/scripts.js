@@ -9,17 +9,19 @@ function eraseContent() {
 function loadHeader() {
     // injetar a classe css junto, quando hovuer
     document.querySelector("body").innerHTML =
-    `
-        <div class="">BuzzQuizz<\div>
+        `
+        <header>
+            BuzzQuizz
+        </header>
     `
     loadQuizz();
 }
 
 function loadQuizz() {
     document.querySelector("body").innerHTML +=
-    `
+        `
         <main>
-        <\main>
+        </main>
     `
     createMenu();
 
@@ -29,23 +31,42 @@ function createMenu() {
     const hasQuizz = userQuizzes()
     // aqui retorna true ou false. Então, dependendo da resposta, habilita um estilo no menu ou outro. o HTML vai ser o mesmo
     document.querySelector("main").innerHTML +=
-    `
-    <div class="user-quizz">
+        `
+    <div class="user-quizzes">
         <span class="quizz-button-small">
             Seus Quizzes
             <ion-icon onclick="createQuizz()" name="add-circle"></ion-icon>
         </span>
         <div class="thumb-box">
-            <div class="quizz-button-big">
+        <!--  <div class="quizz-button-big">
                 <span>
                     Você não criou nenhum quizz ainda :(
                 </span>
-                <span onclick="createQuizz()">
+                <button onclick="createQuizz()">
                     Criar Quizz
-                </span>
+                </button>
+            </div>--> 
+            <div class="user-quizz">
+                O quão Potterhead é você?
+            </div>
+            <div class="user-quizz">
+                É ex-BBB ou ex-De férias com o Ex?
             </div>
         </div>
     </div>
+    <div class="list-quizzes">
+        <ul>Liste todos os Quizzes
+
+            <li class="user-quizz">
+                É ex-BBB ou ex-De férias com o Ex?
+
+            </li>
+
+        </ul>
+
+
+     </div>
+
     `
     // quizz-button-big e quizz-button-small são os estilos a serem selecionados, 
     // ou então só escreve um deles e não o outro
@@ -71,8 +92,8 @@ function createQuizz() {
 // dos campos em que vão números
 function createScreenOne() {
     document.querySelector("main").innerHTML +=
-    `
-    <div>
+        `
+    <div class="createQuizzPage">
         <h2 class="instructions">
             Comece pelo começo
         </h2>
@@ -101,10 +122,10 @@ function createScreenTwo(formData) {
         image: quizzImg,
         questions: questions
     };
-    
+
     eraseContent();
 
-    
+
 }
 
 loadHeader();
