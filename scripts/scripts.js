@@ -83,24 +83,28 @@ function createScreenOne() {
                 <input placeholder="Quantidade de perguntas do quizz" type="number" name="" id="" min="3" required="required">
                 <input placeholder="Quantidade de níveis do quizz" type="number" name="" id="" min="2" required="required">
             </div>
-            <input type="button" onclick="createScreenTwo(this)" class="next-button" value="Prosseguir para criar perguntas">
-        <\form>
+            <input type="submit" onclick="createScreenTwo(form)" class="next-button" value="Prosseguir para criar perguntas">
+        </form>
     </div>
     `
     // document.querySelector("input[type='number']") usar isso aqui para selecionar os campos numéricos, talvez?
 }
 
 function createScreenTwo(formData) {
-    const quizzTitle = formData.parentElement.querySelector("input[type='text']").value
-    const quizzImg = formData.parentElement.querySelector("input[type='url']").value
+    console.log("hi")
+    const quizzTitle = formData.querySelector("input[type='text']").value
+    const quizzImg = formData.querySelector("input[type='url']").value
     // validar os dados antes de prosseguir, planejar isso depois
+    const questions = []
     const quizzForm = {
         title: quizzTitle,
         image: quizzImg,
         questions: questions
     };
     
+    eraseContent();
+
     
-    
-    const questions = []
 }
+
+loadHeader();
