@@ -1,12 +1,7 @@
 const answers = []
 const questions = [];
 const levels = []
-const quizzForm = {
-    title: quizzTitle,
-    image: quizzImg,
-    questions: questions,
-    levels: levels
-};
+const quizzForm = { };
 
 const API_URL = "https://mock-api.driven.com.br/api/v6/buzzquizz/"
 // criei uma função para zerar a tela, pra reaproveitar código e ficar mais bonito
