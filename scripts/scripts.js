@@ -1,7 +1,13 @@
-const answers = []
+const answers = [];
 const questions = [];
-const levels = []
-const quizzForm = { };
+const levels = [];
+const quizzHeader = [];
+const quizzForm = {};
+const LAST_PAGE_INDEX = 2;
+let pageNum = 0;
+let questionsNum;
+let levelsNum;
+
 
 const API_URL = "https://mock-api.driven.com.br/api/v6/buzzquizz/"
 // criei uma função para zerar a tela, pra reaproveitar código e ficar mais bonito
@@ -91,6 +97,97 @@ function createQuizz() {
     createScreenOne();
 }
 
+
+//reformular esse monstrinho
+function parseData(formData) {
+    if (formData.get("quizz") !== null) {
+        quizzHeader.push({ title: formData.get("quizz"), image: formData.get("quizz_url") })
+        formData.delete("quizz")
+        formData.delete("quizz_url")
+    }
+    let i = 0;
+    for (let pair of formData.entries()) {
+        // console.log(pair[0], pair[1])
+        console.log("switch de ", pair[0])
+        switch (pair[0]) {
+            case "title":
+                questions.push({
+                    text: pair[1],
+                    color: formData.get(`${pair[0]}_color`)
+                })
+                break;
+            // case "text":
+            //         questions.push({
+            //             text: pair[1],
+            //             color: formData.get(`${pair[0]}_url`)
+            //         })
+            //         break;
+            case "right":
+                answers.push({
+                    text: pair[1],
+                    image: formData.get(`${pair[0]}_url`),
+                    isCorrectAnswer: true
+                })
+                break;
+            case `wrong0${i}`:
+                answers.push({
+                    text: pair[1],
+                    image: formData.get(`wrong0${i}_url`),
+                    isCorrectAnswer: false
+                })
+                i++;
+                break;
+            case "questions":
+                questionsNum = Number(pair[1])
+                break;
+            case "levels":
+                levelsNum = Number(pair[1])
+                break;
+        }
+    }
+    console.log("sai do for")
+    if (pageNum === 0) {
+        console.log("entrei no if === 0")
+        pageNum++;
+        createScreenTwo(questionsNum);
+        // break;
+    } else {
+        pageNum++;
+        createScreenThree(levelsNum)    
+    }
+}
+
+function parseLevels(formData) {
+    let i = 0;
+    do {
+        levels.push({
+            title: formData.get(`title0${i + 1}`),
+            text: formData.get(`text0${i + 1}`),
+            image: formData.get(`image0${i + 1}`),
+            minValue: formData.get(`lvl_percent0${i + 1}`)
+        });
+        i++;
+    } while (i < levelsNum)
+    console.log(questions,"\n",answers,"\n",levels,"\n")
+    console.log("chegasse no fim camarada")
+    console.log("\n")
+}
+
+function handleData(submitEvent) {
+    submitEvent.preventDefault();
+    const data = new FormData(document.querySelector("form"))
+    if (pageNum === LAST_PAGE_INDEX) {
+        parseLevels(data);
+        return;
+    }
+    parseData(data)
+}
+
+function setEventListener() {
+    const pageForm = document.querySelector("form")
+    pageForm.addEventListener("submit", handleData)
+}
+
 // estilizar
 // https://www.w3schools.com/howto/howto_css_hide_arrow_number.asp
 // tem que adicionar isso aqui no estilo pra não aparecer umas setinhas na lateral
@@ -104,64 +201,66 @@ function createScreenOne() {
         </h2>
         <form>
             <div class="quizz-info">
-                <input placeholder="Título do seu quizz" type="text" name="" id="title" minlength="20" required="required" >
-                <input placeholder="URL da imagem do seu quizz" type="url" name="" id="img" required="required">
-                <input placeholder="Quantidade de perguntas do quizz" type="number" name="" id="questions" min="3" required="required">
-                <input placeholder="Quantidade de níveis do quizz" type="number" name="" id="levels" min="2" required="required">
+                <input placeholder="Título do seu quizz" type="text" name="quizz" minlength="20" required="required" >
+                <input placeholder="URL da imagem do seu quizz" type="url" name="quizz_url" required="required">
+                <input placeholder="Quantidade de perguntas do quizz" type="number" name="questions" min="3" required="required">
+                <input placeholder="Quantidade de níveis do quizz" type="number" name="levels" min="2" required="required">
             </div>
-            <input type="submit" onclick="createScreenTwo(form)" class="next-button" value="Prosseguir para criar perguntas">
+            <input type="submit" class="next-button" value="Prosseguir para criar perguntas">
         </form>
     </div>
     `
+
+    setEventListener();
     // document.querySelector("input[type='number']") usar isso aqui para selecionar os campos numéricos, talvez?
 }
 // estilizar
 
 // estilizar
-function createScreenTwo(formData) {
-    // console.log("hi")
-    quizzForm.title = formData.title.value
-    quizzForm.image = formData.img.value
-    const questionsNum = formData.questions.value;
+function createScreenTwo(questionsNum) {
+    // console.log(formData)
+    // const questionsNum = formData.questions.value;
+    // formData.levels.value
     eraseContent();
-    formData.levels.value
-    
+
     document.querySelector("main").innerHTML +=
-    `
+        `
         <form>
         
         </form>
-    `
-    const formBody = document.querySelector("form")
-    for(let i = 0; i < questionsNum; i++) {
+    `;
+
+    const formBody = document.querySelector("form");
+    for (let i = 0; i < questionsNum; i++) {
         // esconder o ion-icon por default e só mostrar quando o menu estiver encolhido
         // estudar como implementar um jeito bacana de escolher uma cor.
         formBody.innerHTML +=
-        `
+            `
         <div class="question-body">
-            <h2>Pergunta ${i+1}<ion-icon onclick="show()" name="create-outline"></ion-icon></h2>
-            <input type="text" name="" id="title" value="Texto da pergunta" required="required">
-            <input type="color" name="" id="title" value="Cor de fundo da pergunta" required="required">
+            <h2>Pergunta ${i + 1}<ion-icon onclick="show()" name="create-outline"></ion-icon></h2>
+            <input type="text" name="title" placeholder="Texto da pergunta" required="required">
+            <input type="color" name="title_color" placeholder="Cor de fundo da pergunta" required="required">
 
             <h2>Resposta correta</h2>
-            <input type="text" name="" id="right01" value="Resposta correta" required="required">
-            <input type="url" name="" id="right01" value="URL da imagem" required="required">
+            <input type="text" name="right" placeholder="Resposta correta" required="required">
+            <input type="url" name="right_url" placeholder="URL da imagem" required="required">
 
             <h2>Respostas incorretas</h2>
-            <input type="text" name="" id="wrong01" value="Resposta incorreta 1" required="required">
-            <input type="url" name="" id="wrong01" value="URL da imagem 1" required="required">
-            <input type="text" name="" id="wrong02" value="Resposta incorreta 2" required="required">
-            <input type="url" name="" id="wrong02" value="URL da imagem 2" required="required">
-            <input type="text" name="" id="wrong03" value="Resposta incorreta 3">
-            <input type="url" name="" id="wrong03" value="URL da imagem 3">
+            <input type="text" name="wrong01" placeholder="Resposta incorreta 1" required="required">
+            <input type="url" name="wrong01_url" placeholder="URL da imagem 1" required="required">
+            <input type="text" name="wrong02" placeholder="Resposta incorreta 2">
+            <input type="url" name="wrong02_url" placeholder="URL da imagem 2">
+            <input type="text" name="wrong03" placeholder="Resposta incorreta 3">
+            <input type="url" name="wrong03_url" placeholder="URL da imagem 3">
         </div>            
         `
     }
 
     formBody.innerHTML +=
+        `
+        <input type="submit" class="next-button" value="Prosseguir para criar níveis">
     `
-        <input type="submit" onclick="createScreenThree(form, levels)" class="next-button" value="Prosseguir para criar níveis">
-    `
+    setEventListener();
     // vou ter que passar os niveis como parametro pra poder chamar no fim da função e evitar pepinos
     // createQuestionLevels()
     // validar os dados antes de prosseguir, planejar isso depois
@@ -170,62 +269,47 @@ function createScreenTwo(formData) {
 // estilizar
 
 // estilizar
-function createScreenThree(questions, levels) {
-    fillQuestions(questions);
+function createScreenThree(levels) {
     const levelsNum = levels;
     const levelsArray = calculateLevels(levelsNum)
-    
-    quizzForm.questions = algumacoisa;
-
+    eraseContent();
     document.querySelector("main").innerHTML +=
-    `
+        `
         <form>
         
         </form>
-    `
-    const formBody = document.querySelector("form")
-    for(let i = 0; i < levelsNum; i++) {
+    `;
+
+    const formBody = document.querySelector("form");
+    for (let i = 0; i < levelsNum; i++) {
         // esconder o ion-icon por default e só mostrar quando o menu estiver encolhido
         formBody.innerHTML +=
-        `
+            `
         <div class="question-body">
-            <h2>Nível ${i+1}<ion-icon onclick="show()" name="create-outline"></ion-icon></h2>
-            <input type="text" name="" id="title" value="Título do nível" required="required">
-            <input type="number" name="" id="lvl_percent" value="% de acerto mínima (sem o %)" min="${levelsArray[i]}" required="required">
-            <input type="url" name="" id="img_url" value="URL da imagem do nível" required="required">
-            <input type="text" name="" id="description" value="Descrição do nível" minlength="30" required="required">
+            <h2>Nível ${i + 1}<ion-icon onclick="show()" name="create-outline"></ion-icon></h2>
+            <input type="text" name="title0${i + 1}" placeholder="Título do nível" required="required">
+            <input type="number" name="lvl_percent0${i + 1}" placeholder="% de acerto mínima (sem o %)" min="${levelsArray[i]}" value="${levelsArray[i]}" required="required">
+            <input type="url" name="image0${i + 1}" placeholder="URL da imagem do nível" required="required">
+            <input type="text" name="text0${i + 1}" placeholder="Descrição do nível" minlength="30" required="required">
         </div>            
         `
     }
     formBody.innerHTML +=
+        `
+        <input type="submit" class="next-button" value="Finalizar Quizz">
     `
-        <input type="submit" onclick="createScreenThree(form, levels)" class="next-button" value="Prosseguir para criar níveis">
-    `
+    setEventListener();
 }
 // estilizar
 
 function calculateLevels(num) {
     let percentageArray = []
-    const step = Math.round(100/num)
-    for(let i = 0; i < num; i++) {
-        percentageArray.push(step*i)
+    const step = Math.round(100 / num)
+    for (let i = 0; i < num; i++) {
+        percentageArray.push(step * i)
     }
     console.log(percentageArray)
     return percentageArray
-}
-
-function fillQuestions(formQuestions) {
-    const title = formQuestions.querySelector("input[id='title']")
-    title.forEach((info) => questions.push({ title: info.value.title, color: info.value.color}))
-    const answers = formQuestions.querySelector("input[id='right01']")
-    answers.forEach((info) => answers.push({ text: info.value.text, image: info.value.image, isCorrectAnswer: true}))
-    let i = 1
-    let wrongAnswers = formQuestions.querySelector(`input[id='wrong0${i}']`);
-    while(wrongAnswers !== null) {
-        wrongAnswers.forEach((info) => wrongAnswers.push({ text: info.value.text, image: info.value.image, isCorrectAnswer: false}))
-        i++;
-        wrongAnswers = formQuestions.querySelector(`input[id='wrong0${i}']`);
-    }
 }
 
 loadHeader();
