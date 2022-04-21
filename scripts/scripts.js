@@ -1,9 +1,10 @@
-const answers = [];
+const quizzAnswers = [];
 const questions = [];
 const levels = [];
 const quizzHeader = [];
 const quizzForm = {};
 const LAST_PAGE_INDEX = 2;
+const MAX_QUESTIONS = 4;
 let pageNum = 0;
 let questionsNum;
 let levelsNum;
@@ -97,6 +98,11 @@ function createQuizz() {
     createScreenOne();
 }
 
+function isNotEmpty(array) {
+    if(array.length === 0)
+        return false;
+    return true;
+}
 
 //reformular esse monstrinho
 function parseData(formData) {
@@ -106,9 +112,9 @@ function parseData(formData) {
         formData.delete("quizz_url")
     }
     let i = 0;
+    let j = 0;
     for (let pair of formData.entries()) {
         // console.log(pair[0], pair[1])
-        console.log("switch de ", pair[0])
         switch (pair[0]) {
             case "title":
                 questions.push({
@@ -116,26 +122,30 @@ function parseData(formData) {
                     color: formData.get(`${pair[0]}_color`)
                 })
                 break;
-            // case "text":
-            //         questions.push({
-            //             text: pair[1],
-            //             color: formData.get(`${pair[0]}_url`)
-            //         })
-            //         break;
             case "right":
-                answers.push({
+                quizzAnswers.push({
                     text: pair[1],
                     image: formData.get(`${pair[0]}_url`),
                     isCorrectAnswer: true
                 })
                 break;
-            case `wrong0${i}`:
-                answers.push({
-                    text: pair[1],
-                    image: formData.get(`wrong0${i}_url`),
-                    isCorrectAnswer: false
-                })
+            case `wrong0${i+1}`:
+                console.log("switch de", pair[0], pair[1])
+                if (isNotEmpty(pair[1])) {
+                    quizzAnswers.push({
+                        text: pair[1],
+                        image: formData.get(`wrong0${i+1}_url`),
+                        isCorrectAnswer: false
+                    })
+                }
                 i++;
+                if ((i+1) === MAX_QUESTIONS) {
+                    questions[j].answers = []
+                    Object.assign(questions[j].answers, quizzAnswers)
+                    quizzAnswers.splice(0, quizzAnswers.length);
+                    j++;
+                    i = 0;
+                }
                 break;
             case "questions":
                 questionsNum = Number(pair[1])
@@ -159,7 +169,18 @@ function parseData(formData) {
 
 function parseLevels(formData) {
     let i = 0;
+    // const formObj = {
+    //     title: '',
+    //     text: '',
+    //     image: '',
+    //     minValue: undefined
+    // }
     do {
+        // formObj.title = formData.get(`title0${i + 1}`);
+        // formObj.text = formData.get(`text0${i + 1}`);
+        // formObj.image = formData.get(`image0${i + 1}`);
+        // formObj.minValue = formData.get(`lvl_percent0${i + 1}`)
+        // levels.push(formObj);
         levels.push({
             title: formData.get(`title0${i + 1}`),
             text: formData.get(`text0${i + 1}`),
@@ -168,7 +189,7 @@ function parseLevels(formData) {
         });
         i++;
     } while (i < levelsNum)
-    console.log(questions,"\n",answers,"\n",levels,"\n")
+    console.log(questions,"\n",quizzAnswers,"\n",levels,"\n")
     console.log("chegasse no fim camarada")
     console.log("\n")
 }
