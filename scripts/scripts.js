@@ -4,10 +4,6 @@ const questions = [];
 const levels = [];
 const LAST_PAGE_INDEX = 2;
 const MAX_QUESTIONS = 4;
-// const quizzHeader = {
-//     title: '',
-//     image: ''
-// };
 const quizzForm = {
     title: '',
     image: '',
@@ -98,7 +94,6 @@ function emptyArray(array) {
 
 function parseData(formData) {
     if (formData.get("quizz") !== null) {
-        // quizzHeader.push({ title: formData.get("quizz"), image: formData.get("quizz_url") })
         quizzForm.title = formData.get("quizz")
         quizzForm.image = formData.get("quizz_url")
         formData.delete("quizz")
@@ -123,7 +118,6 @@ function parseData(formData) {
                 })
                 break;
             case `wrong_0${j+1}_0${i+1}`:
-                console.log("switch de", pair[0], pair[1])
                 if (isNotEmpty(pair[1])) {
                     quizzAnswers.push({
                         text: pair[1],
@@ -133,7 +127,6 @@ function parseData(formData) {
                 }
                 i++;
                 if ((i+1) === MAX_QUESTIONS) {
-                    // questions[j].answers = []
                     Object.assign(questions[j].answers, quizzAnswers)
                     emptyArray(quizzAnswers)
                     j++;
@@ -148,9 +141,7 @@ function parseData(formData) {
                 break;
         }
     }
-    console.log("sai do for")
     if (pageNum === 0) {
-        console.log("entrei no if === 0")
         pageNum++;
         createScreenTwo(questionsNum);
     } else {
@@ -160,37 +151,25 @@ function parseData(formData) {
 }
 
 function postQuizz() {
-    // Object.assign(quizzForm.title, quizzHeader.title);
-    // Object.assign(quizzForm.image, quizzHeader.image);
     Object.assign(quizzForm.questions, questions);
     Object.assign(quizzForm.levels, levels);
     const promise = axios.post(API_URL+"quizzes", quizzForm)
-    promise.then((data) => {
-        const quizzString = JSON.stringify(quizzForm);
-        localStorage.setItem(data.key, quizzString);
+    promise.then((response) => {
+        console.log(response)
+        console.log(typeof response.data)
+        const responseString = JSON.stringify(response.data)
+        localStorage.setItem(response.data.key, responseString);
     })
     promise.catch((code) => {
         alert(`Erro ao enviar o quizz.\nCódigo ${code.response.status}.\nMais detalhes: ${code.response}`)
     })
-    // emptyArray(quizzHeader)
     emptyArray(questions)
     emptyArray(levels)
 }
 
 function parseLevels(formData) {
     let i = 0;
-    // const formObj = {
-    //     title: '',
-    //     text: '',
-    //     image: '',
-    //     minValue: undefined
-    // }
     do {
-        // formObj.title = formData.get(`title0${i + 1}`);
-        // formObj.text = formData.get(`text0${i + 1}`);
-        // formObj.image = formData.get(`image0${i + 1}`);
-        // formObj.minValue = formData.get(`lvl_percent0${i + 1}`)
-        // levels.push(formObj);
         levels.push({
             title: formData.get(`title0${i + 1}`),
             image: formData.get(`image0${i + 1}`),
@@ -199,9 +178,6 @@ function parseLevels(formData) {
         });
         i++;
     } while (i < levelsNum)
-    console.log(questions, "\n", quizzAnswers, "\n", levels, "\n")
-    console.log("chegasse no fim camarada")
-    console.log("\n")
     postQuizz();
 }
 
@@ -250,9 +226,6 @@ function createScreenOne() {
 
 // estilizar
 function createScreenTwo(questionsNum) {
-    // console.log(formData)
-    // const questionsNum = formData.questions.value;
-    // formData.levels.value
     eraseContent();
 
     document.querySelector("main").innerHTML +=
