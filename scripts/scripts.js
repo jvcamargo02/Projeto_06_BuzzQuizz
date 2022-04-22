@@ -8,6 +8,8 @@ const MAX_QUESTIONS = 4;
 let pageNum = 0;
 let questionsNum;
 let levelsNum;
+let data;
+let teste;
 
 
 const API_URL = "https://mock-api.driven.com.br/api/v6/buzzquizz/"
@@ -23,7 +25,9 @@ function loadHeader() {
     document.querySelector("body").innerHTML =
         `
         <header>
-            BuzzQuizz
+            <div class="top">
+                <h1  onclick="loadHeader()">BuzzQuizz</h1>
+            </div>
         </header>
     `
     loadQuizz();
@@ -75,7 +79,7 @@ function createQuizz() {
 }
 
 function isNotEmpty(array) {
-    if(array.length === 0)
+    if (array.length === 0)
         return false;
     return true;
 }
@@ -105,17 +109,17 @@ function parseData(formData) {
                     isCorrectAnswer: true
                 })
                 break;
-            case `wrong0${i+1}`:
+            case `wrong0${i + 1}`:
                 console.log("switch de", pair[0], pair[1])
                 if (isNotEmpty(pair[1])) {
                     quizzAnswers.push({
                         text: pair[1],
-                        image: formData.get(`wrong0${i+1}_url`),
+                        image: formData.get(`wrong0${i + 1}_url`),
                         isCorrectAnswer: false
                     })
                 }
                 i++;
-                if ((i+1) === MAX_QUESTIONS) {
+                if ((i + 1) === MAX_QUESTIONS) {
                     questions[j].answers = []
                     Object.assign(questions[j].answers, quizzAnswers)
                     quizzAnswers.splice(0, quizzAnswers.length);
@@ -139,7 +143,7 @@ function parseData(formData) {
         // break;
     } else {
         pageNum++;
-        createScreenThree(levelsNum)    
+        createScreenThree(levelsNum)
     }
 }
 
@@ -165,7 +169,7 @@ function parseLevels(formData) {
         });
         i++;
     } while (i < levelsNum)
-    console.log(questions,"\n",quizzAnswers,"\n",levels,"\n")
+    console.log(questions, "\n", quizzAnswers, "\n", levels, "\n")
     console.log("chegasse no fim camarada")
     console.log("\n")
 }
@@ -351,12 +355,11 @@ function printQuizzes(promisse) {
 
     const quizzArr = promisse.data
     const listAllQuizzesDOM = document.querySelector(".list")
-    console.log(quizzArr)
 
     for (let i = 0; i < quizzArr.length; i++) {
         listAllQuizzesDOM.innerHTML += ` 
         
-        <li class="user-quizz">
+        <li onclick="searchQuizz(${quizzArr[i].id})" class="user-quizz">
             <img class="quizImg" src="${quizzArr[i].image}" alt="">
             <h4 class="quizz-title">${quizzArr[i].title}</h4> 
         </li>`
@@ -364,4 +367,73 @@ function printQuizzes(promisse) {
 
 }
 
+function searchQuizz(quizzId) {
+
+    const promisseQuizz = axios.get(`https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes/${quizzId}`)
+    promisseQuizz.then(openQuizz)
+}
+
+function openQuizz(response) {
+
+    eraseContent()
+    data = response.data
+    const quizzTop = document.querySelector("header")
+    const quizzScreen = document.querySelector("main")
+    
+    quizzTop.innerHTML += `
+        <div class="quizzTop">
+
+            <img class="thumbQuizz" src="${data.image}" alt="">
+            <h4 class="quizzTitlePage">${data.title}</h4>
+
+        </div> `
+
+    quizzScreen.innerHTML =
+        `<div class="questions">
+        
+        </div>`
+
+    printQuestions(data)
+}
+
+function printQuestions(data) {
+
+
+    
+    const quizzScreen = document.querySelector(".questions")
+    
+
+
+    for (let i = 0; i < data.questions.length; i++) {
+
+        quizzScreen.innerHTML += `
+        <div class="question">
+            <div class="questionTitle">
+                <h4>${data.questions[i].title}</h4>
+            </div>`
+            teste = document.querySelector(`.question:nth-child(${1+i})`)
+        printChoices(data, i, teste)
+    }
+
+
+
+}
+
+function printChoices(data, i, teste) {
+
+
+    for (let index = 0; index < data.questions[i].answers.length; index++) {
+        teste.innerHTML += `
+        <div class="choice">
+                <img src="${data.questions[i].answers[index].image}" alt="Imagem da alternativa">
+                <h6>${data.questions[i].answers[index].text}</h6>
+            </div>
+        `
+
+    }
+
+}
+
 loadHeader();
+
+/*  */
