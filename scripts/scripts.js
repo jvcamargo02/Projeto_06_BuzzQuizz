@@ -1,10 +1,19 @@
+const API_URL = "https://mock-api.driven.com.br/api/v6/buzzquizz/"
 const quizzAnswers = [];
 const questions = [];
 const levels = [];
-const quizzHeader = [];
-const quizzForm = {};
 const LAST_PAGE_INDEX = 2;
 const MAX_QUESTIONS = 4;
+// const quizzHeader = {
+//     title: '',
+//     image: ''
+// };
+const quizzForm = {
+    title: '',
+    image: '',
+    questions: [],
+    levels: []
+};
 let pageNum = 0;
 let questionsNum;
 let levelsNum;
@@ -13,7 +22,6 @@ let teste;
 let teste2 = []
 
 
-const API_URL = "https://mock-api.driven.com.br/api/v6/buzzquizz/"
 // criei uma função para zerar a tela, pra reaproveitar código e ficar mais bonito
 // também isso nos tira o trabalho de ter que ficar mudando z-index e outros indicadores de profundidade do css
 
@@ -24,7 +32,7 @@ function eraseContent() {
 function loadHeader() {
     // injetar a classe css junto, quando hovuer
     document.querySelector("body").innerHTML =
-        `
+    `
         <header>
             <div class="top">
                 <h1  onclick="loadHeader()">BuzzQuizz</h1>
@@ -36,7 +44,7 @@ function loadHeader() {
 
 function loadQuizz() {
     document.querySelector("body").innerHTML +=
-        `
+    `
         <main>
         </main>
     `
@@ -48,7 +56,7 @@ function createMenu() {
     const hasQuizz = userQuizzes()
     // aqui retorna true ou false. Então, dependendo da resposta, habilita um estilo no menu ou outro. o HTML vai ser o mesmo
     document.querySelector("main").innerHTML +=
-        `
+    `
     <div class="user-quizzes">
         
     </div>
@@ -66,8 +74,8 @@ function createMenu() {
     // chama uma função aqui pra carregar todos os quizzes do usuário na thumb-box
     // thumb-box de thumbnail + vou deixar a função comentada pra depois
 
-    fillUserQuizz()
-    listQuizzes()
+    fillUserQuizz();
+    listQuizzes();
 }
 
 function userQuizzes() {
@@ -85,45 +93,50 @@ function isNotEmpty(array) {
     return true;
 }
 
-//reformular esse monstrinho
+function emptyArray(array) {
+    array.splice(0, array.length);
+}
+
 function parseData(formData) {
     if (formData.get("quizz") !== null) {
-        quizzHeader.push({ title: formData.get("quizz"), image: formData.get("quizz_url") })
+        // quizzHeader.push({ title: formData.get("quizz"), image: formData.get("quizz_url") })
+        quizzForm.title = formData.get("quizz")
+        quizzForm.image = formData.get("quizz_url")
         formData.delete("quizz")
         formData.delete("quizz_url")
     }
     let i = 0;
     let j = 0;
     for (let pair of formData.entries()) {
-        // console.log(pair[0], pair[1])
         switch (pair[0]) {
-            case "title":
+            case `title0${j+1}`:
                 questions.push({
-                    text: pair[1],
+                    title: pair[1],
                     color: formData.get(`${pair[0]}_color`)
                 })
+                questions[j].answers = []
                 break;
-            case "right":
+            case `right0${j+1}`:
                 quizzAnswers.push({
                     text: pair[1],
                     image: formData.get(`${pair[0]}_url`),
                     isCorrectAnswer: true
                 })
                 break;
-            case `wrong0${i + 1}`:
+            case `wrong_0${j+1}_0${i+1}`:
                 console.log("switch de", pair[0], pair[1])
                 if (isNotEmpty(pair[1])) {
                     quizzAnswers.push({
                         text: pair[1],
-                        image: formData.get(`wrong0${i + 1}_url`),
+                        image: formData.get(`${pair[0]}_url`),
                         isCorrectAnswer: false
                     })
                 }
                 i++;
-                if ((i + 1) === MAX_QUESTIONS) {
-                    questions[j].answers = []
+                if ((i+1) === MAX_QUESTIONS) {
+                    // questions[j].answers = []
                     Object.assign(questions[j].answers, quizzAnswers)
-                    quizzAnswers.splice(0, quizzAnswers.length);
+                    emptyArray(quizzAnswers)
                     j++;
                     i = 0;
                 }
@@ -141,11 +154,28 @@ function parseData(formData) {
         console.log("entrei no if === 0")
         pageNum++;
         createScreenTwo(questionsNum);
-        // break;
     } else {
         pageNum++;
         createScreenThree(levelsNum)
     }
+}
+
+function postQuizz() {
+    // Object.assign(quizzForm.title, quizzHeader.title);
+    // Object.assign(quizzForm.image, quizzHeader.image);
+    Object.assign(quizzForm.questions, questions);
+    Object.assign(quizzForm.levels, levels);
+    const promise = axios.post(API_URL+"quizzes", quizzForm)
+    promise.then((data) => {
+        const quizzString = JSON.stringify(quizzForm);
+        localStorage.setItem(data.key, quizzString);
+    })
+    promise.catch((code) => {
+        alert(`Erro ao enviar o quizz.\nCódigo ${code.response.status}.\nMais detalhes: ${code.response}`)
+    })
+    // emptyArray(quizzHeader)
+    emptyArray(questions)
+    emptyArray(levels)
 }
 
 function parseLevels(formData) {
@@ -164,15 +194,16 @@ function parseLevels(formData) {
         // levels.push(formObj);
         levels.push({
             title: formData.get(`title0${i + 1}`),
-            text: formData.get(`text0${i + 1}`),
             image: formData.get(`image0${i + 1}`),
-            minValue: formData.get(`lvl_percent0${i + 1}`)
+            text: formData.get(`text0${i + 1}`),
+            minValue: Number(formData.get(`lvl_percent0${i + 1}`))
         });
         i++;
     } while (i < levelsNum)
     console.log(questions, "\n", quizzAnswers, "\n", levels, "\n")
     console.log("chegasse no fim camarada")
     console.log("\n")
+    postQuizz();
 }
 
 function handleData(submitEvent) {
@@ -196,7 +227,7 @@ function setEventListener() {
 // dos campos em que vão números
 function createScreenOne() {
     document.querySelector("main").innerHTML +=
-        `
+    `
     <div class="createQuizzPage">
         <h2 class="instructions">
             Comece pelo começo
@@ -226,7 +257,7 @@ function createScreenTwo(questionsNum) {
     eraseContent();
 
     document.querySelector("main").innerHTML +=
-        `
+    `
         <form>
         
         </form>
@@ -237,29 +268,29 @@ function createScreenTwo(questionsNum) {
         // esconder o ion-icon por default e só mostrar quando o menu estiver encolhido
         // estudar como implementar um jeito bacana de escolher uma cor.
         formBody.innerHTML +=
-            `
+        `
         <div class="question-body">
             <h2>Pergunta ${i + 1}<ion-icon onclick="show()" name="create-outline"></ion-icon></h2>
-            <input type="text" name="title" placeholder="Texto da pergunta" required="required">
-            <input type="color" name="title_color" placeholder="Cor de fundo da pergunta" required="required">
+            <input type="text" name="title0${i + 1}" placeholder="Texto da pergunta" required="required">
+            <input type="color" name="title0${i + 1}_color" placeholder="Cor de fundo da pergunta" required="required">
 
             <h2>Resposta correta</h2>
-            <input type="text" name="right" placeholder="Resposta correta" required="required">
-            <input type="url" name="right_url" placeholder="URL da imagem" required="required">
+            <input type="text" name="right0${i + 1}" placeholder="Resposta correta" required="required">
+            <input type="url" name="right0${i + 1}_url" placeholder="URL da imagem" required="required">
 
             <h2>Respostas incorretas</h2>
-            <input type="text" name="wrong01" placeholder="Resposta incorreta 1" required="required">
-            <input type="url" name="wrong01_url" placeholder="URL da imagem 1" required="required">
-            <input type="text" name="wrong02" placeholder="Resposta incorreta 2">
-            <input type="url" name="wrong02_url" placeholder="URL da imagem 2">
-            <input type="text" name="wrong03" placeholder="Resposta incorreta 3">
-            <input type="url" name="wrong03_url" placeholder="URL da imagem 3">
+            <input type="text" name="wrong_0${i + 1}_01" placeholder="Resposta incorreta 1" required="required">
+            <input type="url" name="wrong_0${i + 1}_01_url" placeholder="URL da imagem 1" required="required">
+            <input type="text" name="wrong_0${i + 1}_02" placeholder="Resposta incorreta 2">
+            <input type="url" name="wrong_0${i + 1}_02_url" placeholder="URL da imagem 2">
+            <input type="text" name="wrong_0${i + 1}_03" placeholder="Resposta incorreta 3">
+            <input type="url" name="wrong_0${i + 1}_03_url" placeholder="URL da imagem 3">
         </div>            
         `
     }
 
     formBody.innerHTML +=
-        `
+    `
         <input type="submit" class="next-button" value="Prosseguir para criar níveis">
     `
     setEventListener();
@@ -276,7 +307,7 @@ function createScreenThree(levels) {
     const levelsArray = calculateLevels(levelsNum)
     eraseContent();
     document.querySelector("main").innerHTML +=
-        `
+    `
         <form>
         
         </form>
@@ -286,18 +317,18 @@ function createScreenThree(levels) {
     for (let i = 0; i < levelsNum; i++) {
         // esconder o ion-icon por default e só mostrar quando o menu estiver encolhido
         formBody.innerHTML +=
-            `
-        <div class="question-body">
-            <h2>Nível ${i + 1}<ion-icon onclick="show()" name="create-outline"></ion-icon></h2>
-            <input type="text" name="title0${i + 1}" placeholder="Título do nível" required="required">
-            <input type="number" name="lvl_percent0${i + 1}" placeholder="% de acerto mínima (sem o %)" min="${levelsArray[i]}" value="${levelsArray[i]}" required="required">
-            <input type="url" name="image0${i + 1}" placeholder="URL da imagem do nível" required="required">
-            <input type="text" name="text0${i + 1}" placeholder="Descrição do nível" minlength="30" required="required">
-        </div>            
+        `
+            <div class="question-body">
+                <h2>Nível ${i + 1}<ion-icon onclick="show()" name="create-outline"></ion-icon></h2>
+                <input type="text" name="title0${i + 1}" placeholder="Título do nível" required="required">
+                <input type="number" name="lvl_percent0${i + 1}" placeholder="% de acerto mínima (sem o %)" min="${levelsArray[i]}" value="${levelsArray[i]}" required="required">
+                <input type="url" name="image0${i + 1}" placeholder="URL da imagem do nível" required="required">
+                <input type="text" name="text0${i + 1}" placeholder="Descrição do nível" minlength="30" required="required">
+            </div>            
         `
     }
     formBody.innerHTML +=
-        `
+    `
         <input type="submit" class="next-button" value="Finalizar Quizz">
     `
     setEventListener();
@@ -325,7 +356,8 @@ function fillUserQuizz() {
 
     if (localStorage.length === 0) {
 
-        userQuizzes.innerHTML = `
+        userQuizzes.innerHTML = 
+        `
             <div class="thumb-box">
                 <div class="quizz-button-big">
                     <span>
@@ -336,7 +368,7 @@ function fillUserQuizz() {
                     </button>
                 </div>
             </div>
-            `
+        `
     } else {
         userQuizzes.innerHTML += `
         <span class="quizz-button-small">
