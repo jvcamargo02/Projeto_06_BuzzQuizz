@@ -10,6 +10,7 @@ let questionsNum;
 let levelsNum;
 let data;
 let teste;
+let teste2 = []
 
 
 const API_URL = "https://mock-api.driven.com.br/api/v6/buzzquizz/"
@@ -411,37 +412,55 @@ function printQuestions(data) {
             <div style="background-color: ${data.questions[i].color}" class="questionTitle">
                 <h4>${data.questions[i].title}</h4>
             </div>`
-        teste = document.querySelector(`.question:nth-child(${1 + i})`)
-        printChoices(data, i, teste)
+        const question = document.querySelector(`.question:nth-child(${1 + i})`)
+        printChoices(data, i, question)
     }
 
 
 
 }
 
-function printChoices(data, i, teste) {
+function printChoices(data, i, question) {
 
+    console.log(data.questions[i].answers)
+    teste = []
 
     for (let index = 0; index < data.questions[i].answers.length; index++) {
+        console.log(data.questions[i].answers[index])
+        teste.push(data.questions[i].answers[index])
+        teste.sort(comparador)
 
-        if(data.questions[i].answers[index].isCorrectAnswer === false){
-        teste.innerHTML += `
-        <div class="choice">
-                <img src="${data.questions[i].answers[index].image}" alt="Imagem da alternativa">
-                <h6 class="wrongAnswer defaultAnswer">${data.questions[i].answers[index].text}</h6>
-            </div>
-        `
-        } else if (data.questions[i].answers[index].isCorrectAnswer === true) {
+        for (let ino = 0; ino < teste.length; ino++){
 
-            teste.innerHTML += `
-            <div class="choice">
-                    <img src="${data.questions[i].answers[index].image}" alt="Imagem da alternativa">
-                    <h6 class="correctAnswer defaultAnswer">${data.questions[i].answers[index].text}</h6>
-                </div>
-            `
+            console.log('passei aqui')
+
+             if(teste[ino].isCorrectAnswer === false){
+                question.innerHTML += `
+                <div class="choice">
+                        <img src="${teste[ino].image}" alt="Imagem da alternativa">
+                        <h6 class="wrongAnswer">${teste[ino].text}</h6>
+                    </div>
+                `
+            } else if (teste[ino].isCorrectAnswer === true) {
+                console.log("adicionei 1")
+                question.innerHTML += `
+                    <div class="choice">
+                        <img src="${teste[ino].image}" alt="Imagem da alternativa">
+                        <h6 class="correctAnswer">${teste[ino].text}</h6>
+                    </div>
+                    ` 
+                    console.log("erminei de adicionar 1")
+            }
+
         }
+
+       
     }
 
+}
+
+function comparador() { 
+	return Math.random() - 0.5; 
 }
 
 loadHeader();
