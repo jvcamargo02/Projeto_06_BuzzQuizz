@@ -228,12 +228,21 @@ li{
     flex-direction: column;
     align-items: center;
     margin-left: auto; margin-right: auto;
+    margin-bottom: 170px;
 }
 
 .questionTitle{
     width: 100%;
-    background-color: blue;
-    height: 80px;
+    height: 138px;
+    display: grid;
+    place-items: center;
+}
+
+.questionTitle > h4 {
+    font-size: 23px;
+    font-weight: 700;
+    color: white;
+
 }
 
 .question {
@@ -243,14 +252,40 @@ li{
     justify-content: center;
     margin-top: 42px;
     background-color: white;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05);
     padding: 35px;
 }
 
+.choice {
+    cursor: pointer;
+    background-color: transparent; 
+    margin-top: 20px;
+}
+
+.choice > h6 {
+    max-width: 300px;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 24px;
+    word-break: break-all;
+}
 
 .choice > img{
     width: 330px;
     height: 175px;
-    margin-top: 20px;
+
+}
+
+.correctAnswer{
+    color:green
+}
+
+.wrongAnswer{
+    color: red
+}
+
+.defaultAnswer {
+    color: black;
 }
 
 .choice:nth-child(2n+1){

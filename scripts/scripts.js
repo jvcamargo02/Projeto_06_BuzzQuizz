@@ -379,7 +379,7 @@ function openQuizz(response) {
     data = response.data
     const quizzTop = document.querySelector("header")
     const quizzScreen = document.querySelector("main")
-    
+
     quizzTop.innerHTML += `
         <div class="quizzTop">
 
@@ -399,19 +399,19 @@ function openQuizz(response) {
 function printQuestions(data) {
 
 
-    
+
     const quizzScreen = document.querySelector(".questions")
-    
+
 
 
     for (let i = 0; i < data.questions.length; i++) {
 
         quizzScreen.innerHTML += `
         <div class="question">
-            <div class="questionTitle">
+            <div style="background-color: ${data.questions[i].color}" class="questionTitle">
                 <h4>${data.questions[i].title}</h4>
             </div>`
-            teste = document.querySelector(`.question:nth-child(${1+i})`)
+        teste = document.querySelector(`.question:nth-child(${1 + i})`)
         printChoices(data, i, teste)
     }
 
@@ -423,13 +423,23 @@ function printChoices(data, i, teste) {
 
 
     for (let index = 0; index < data.questions[i].answers.length; index++) {
+
+        if(data.questions[i].answers[index].isCorrectAnswer === false){
         teste.innerHTML += `
         <div class="choice">
                 <img src="${data.questions[i].answers[index].image}" alt="Imagem da alternativa">
-                <h6>${data.questions[i].answers[index].text}</h6>
+                <h6 class="wrongAnswer defaultAnswer">${data.questions[i].answers[index].text}</h6>
             </div>
         `
+        } else if (data.questions[i].answers[index].isCorrectAnswer === true) {
 
+            teste.innerHTML += `
+            <div class="choice">
+                    <img src="${data.questions[i].answers[index].image}" alt="Imagem da alternativa">
+                    <h6 class="correctAnswer defaultAnswer">${data.questions[i].answers[index].text}</h6>
+                </div>
+            `
+        }
     }
 
 }
