@@ -434,33 +434,28 @@ function printChoices(data, i, question) {
         console.log(data.questions[i].answers[index])
         teste.push(data.questions[i].answers[index])
         teste.sort(comparador)
-
-        for (let ino = 0; ino < teste.length; ino++){
-
-            console.log('passei aqui')
-
-             if(teste[ino].isCorrectAnswer === false){
-                question.innerHTML += `
-                <div class="choice">
-                        <img src="${teste[ino].image}" alt="Imagem da alternativa">
-                        <h6 class="wrongAnswer">${teste[ino].text}</h6>
-                    </div>
-                `
-            } else if (teste[ino].isCorrectAnswer === true) {
-                console.log("adicionei 1")
-                question.innerHTML += `
-                    <div class="choice">
-                        <img src="${teste[ino].image}" alt="Imagem da alternativa">
-                        <h6 class="correctAnswer">${teste[ino].text}</h6>
-                    </div>
-                    ` 
-                    console.log("erminei de adicionar 1")
-            }
-
-        }
-
        
     }
+
+    for (let ino = 0; ino < teste.length; ino++){
+
+        if(teste[ino].isCorrectAnswer === false){
+            question.innerHTML += `
+            <div class="choice">
+                    <img src="${teste[ino].image}" alt="Imagem da alternativa">
+                    <h6 class="wrongAnswer">${teste[ino].text}</h6>
+                </div>
+            `
+        } else if (teste[ino].isCorrectAnswer === true) {
+            console.log("adicionei 1")
+            question.innerHTML += `
+                <div class="choice">
+                    <img src="${teste[ino].image}" alt="Imagem da alternativa">
+                    <h6 class="correctAnswer">${teste[ino].text}</h6>
+                </div>
+                ` 
+        }
+    } 
 
 }
 
