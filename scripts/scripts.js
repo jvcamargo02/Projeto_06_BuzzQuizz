@@ -31,7 +31,7 @@ function loadHeader() {
     `
         <header>
             <div class="top">
-                <h1  onclick="loadHeader()">BuzzQuizz</h1>
+                <h1 onclick="loadHeader()">BuzzQuizz</h1>
             </div>
         </header>
     `
@@ -45,7 +45,6 @@ function loadQuizz() {
         </main>
     `
     createMenu();
-
 }
 
 function createMenu() {
@@ -60,7 +59,7 @@ function createMenu() {
     Liste todos os Quizzes
         <ul class="list">
         </ul>
-     </div>
+    </div>
 
     `
     // quizz-button-big e quizz-button-small são os estilos a serem selecionados, 
@@ -156,16 +155,14 @@ function postQuizz() {
     Object.assign(quizzForm.levels, levels);
     const promise = axios.post(API_URL+"quizzes", quizzForm)
     promise.then((response) => {
-        console.log(response)
-        console.log(typeof response.data)
         const responseString = JSON.stringify(response.data)
-        localStorage.setItem(response.data.key, responseString);
-    })
+        const responseKey = response.data.key.toString();
+        localStorage.setItem(responseKey, responseString);
+    });
     promise.catch((code) => {
         alert(`Erro ao enviar o quizz.\nCódigo ${code.response.status}.\nMais detalhes: ${code.response}`)
-    })
-    emptyArray(questions)
-    emptyArray(levels)
+    });
+    createScreenFour();
 }
 
 function parseLevels(formData) {
@@ -307,6 +304,28 @@ function createScreenThree(levels) {
     setEventListener();
 }
 // estilizar
+
+// estilizar
+function createScreenFour() {
+    eraseContent();
+    document.querySelector("main").innerHTML +=
+    `
+        <div>
+            <h1>Seu quizz está pronto!</h1>
+            <img src="${quizzForm.image}" alt="Imagem do quizz criado por você">
+            <button onclick="accessNewQuizz()">Acessar Quizz</button>
+            <button onclick="createMenu()">Voltar para home</button>
+        </div>
+    `
+    emptyArray(questions);
+    emptyArray(levels);
+}
+// estilizar
+
+function accessNewQuizz() {
+    const quizzId = localStorage.getItem(localStorage.key(localStorage.length-1)).id;
+    searchQuizz(quizzId);
+}
 
 function calculateLevels(num) {
     let percentageArray = []
