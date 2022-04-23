@@ -23,6 +23,7 @@ let teste2 = []
 
 function eraseContent() {
     document.querySelector("main").innerHTML = "";
+    window.scrollTo(0,0)
 }
 
 function loadHeader() {
@@ -413,10 +414,11 @@ function printQuestions(data) {
     for (let i = 0; i < data.questions.length; i++) {
 
         quizzScreen.innerHTML += `
+        
         <div class="question">
             <div style="background-color: ${data.questions[i].color}" class="questionTitle">
                 <h4>${data.questions[i].title}</h4>
-            </div>`
+            </div>  `
         const question = document.querySelector(`.question:nth-child(${1 + i})`)
         printChoices(data, i, question)
     }
@@ -439,30 +441,72 @@ function printChoices(data, i, question) {
 
     for (let ino = 0; ino < teste.length; ino++){
 
-        if(teste[ino].isCorrectAnswer === false){
+       
             question.innerHTML += `
-            <div class="choice">
+
+ 
+            
+            
+   
+            <div onclick="clickQuizz(this)" class="choice">
                     <img src="${teste[ino].image}" alt="Imagem da alternativa">
-                    <h6 class="wrongAnswer">${teste[ino].text}</h6>
-                </div>
+                    <h6 class="wrongAnswer defaultAnswer">${teste[ino].text}</h6>
+            </div>
+
             `
-        } else if (teste[ino].isCorrectAnswer === true) {
-            console.log("adicionei 1")
-            question.innerHTML += `
-                <div class="choice">
-                    <img src="${teste[ino].image}" alt="Imagem da alternativa">
-                    <h6 class="correctAnswer">${teste[ino].text}</h6>
-                </div>
-                ` 
-        }
+        
     } 
 
 }
+
+
+function clickQuizz (element) {
+
+
+    const testando = element.innerHTML
+    console.log(testando)
+
+    element.innerHTML = `
+    
+    
+    <div class="mascara">
+    <div  class="choice">
+            
+        </div> 
+            
+        </div>
+    
+    `
+}
+
 
 function comparador() { 
 	return Math.random() - 0.5; 
 }
 
+
+
 loadHeader();
 
-/*  */
+/*      if(teste[ino].isCorrectAnswer === false){ 
+
+
+    
+} else if (teste[ino].isCorrectAnswer === true) {
+            
+            question.innerHTML += `
+            <div class="mascara">
+                <div class="choice">
+                    <img src="${teste[ino].image}" alt="Imagem da alternativa">
+                    <h6 class="correctAnswer defaultAnswer">${teste[ino].text}</h6>
+                </div>  
+                
+                </div>
+
+                ` 
+        }     
+        
+        
+        <div class="mascara">
+                oi
+                </div>        */
