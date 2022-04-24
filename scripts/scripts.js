@@ -202,13 +202,14 @@ function setEventListener() {
 // tem que adicionar isso aqui no estilo pra não aparecer umas setinhas na lateral
 // dos campos em que vão números
 function createScreenOne() {
+    // <div class="createQuizzPage">
+    // </div>
     document.querySelector("main").innerHTML +=
     `
-    <div class="createQuizzPage">
-        <h2 class="instructions">
+        <h1 class="forms-header">
             Comece pelo começo
-        </h2>
-        <form>
+        </h1>
+        <form class="question-body">
             <div class="quizz-info">
                 <input placeholder="Título do seu quizz" type="text" name="quizz" minlength="20" required="required" >
                 <input placeholder="URL da imagem do seu quizz" type="url" name="quizz_url" required="required">
@@ -217,7 +218,6 @@ function createScreenOne() {
             </div>
             <input type="submit" class="next-button" value="Prosseguir para criar perguntas">
         </form>
-    </div>
     `
 
     setEventListener();
@@ -231,7 +231,10 @@ function createScreenTwo(questionsNum) {
 
     document.querySelector("main").innerHTML +=
     `
-        <form>
+        <h1 class="forms-header">
+            Crie suas perguntas
+        </h1>
+        <form class="question-body">
         
         </form>
     `;
@@ -242,16 +245,21 @@ function createScreenTwo(questionsNum) {
         // estudar como implementar um jeito bacana de escolher uma cor.
         formBody.innerHTML +=
         `
-        <div class="question-body">
-            <h2>Pergunta ${i + 1}<ion-icon onclick="show()" name="create-outline"></ion-icon></h2>
+        <div>
+            <span>
+                <h2 class="quizz-context">
+                    Pergunta ${i + 1}
+                    <ion-icon onclick="show()" name="create-outline"></ion-icon>
+                </h2>
+            </span>
             <input type="text" name="title0${i + 1}" placeholder="Texto da pergunta" required="required">
             <input type="color" name="title0${i + 1}_color" placeholder="Cor de fundo da pergunta" required="required">
 
-            <h2>Resposta correta</h2>
+            <h2 class="quizz-context">Resposta correta</h2>
             <input type="text" name="right0${i + 1}" placeholder="Resposta correta" required="required">
             <input type="url" name="right0${i + 1}_url" placeholder="URL da imagem" required="required">
 
-            <h2>Respostas incorretas</h2>
+            <h2 class="quizz-context">Respostas incorretas</h2>
             <input type="text" name="wrong_0${i + 1}_01" placeholder="Resposta incorreta 1" required="required">
             <input type="url" name="wrong_0${i + 1}_01_url" placeholder="URL da imagem 1" required="required">
             <input type="text" name="wrong_0${i + 1}_02" placeholder="Resposta incorreta 2">
@@ -281,7 +289,10 @@ function createScreenThree(levels) {
     eraseContent();
     document.querySelector("main").innerHTML +=
     `
-        <form>
+        <h1 class="forms-header">
+            Agora, decida os níveis
+        </h1>
+        <form class="question-body">
         
         </form>
     `;
@@ -291,8 +302,13 @@ function createScreenThree(levels) {
         // esconder o ion-icon por default e só mostrar quando o menu estiver encolhido
         formBody.innerHTML +=
         `
-            <div class="question-body">
-                <h2>Nível ${i + 1}<ion-icon onclick="show()" name="create-outline"></ion-icon></h2>
+            <div>
+                <span>
+                    <h2 class="quizz-context">
+                        Nível ${i + 1}
+                        <ion-icon onclick="show()" name="create-outline"></ion-icon>
+                    </h2>
+                </span>
                 <input type="text" name="title0${i + 1}" placeholder="Título do nível" required="required">
                 <input type="number" name="lvl_percent0${i + 1}" placeholder="% de acerto mínima (sem o %)" min="${levelsArray[i]}" value="${levelsArray[i]}" required="required">
                 <input type="url" name="image0${i + 1}" placeholder="URL da imagem do nível" required="required">
