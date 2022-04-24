@@ -14,6 +14,7 @@ let pageNum = 0;
 let questionsNum;
 let levelsNum;
 let data;
+let quizzId;
 let teste;
 let teste2 = []
 let testando;
@@ -395,7 +396,9 @@ function printQuizzes(promisse) {
 
 }
 
-function searchQuizz(quizzId) {
+function searchQuizz(id) {
+
+    quizzId = id
 
     const promisseQuizz = axios.get(`https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes/${quizzId}`)
     promisseQuizz.then(openQuizz)
@@ -527,11 +530,29 @@ function countHits (element) {
 
 }
 
+function resultQuizz () {
+
+    
+
+}
+
+function restartQuizz () {
+    
+    loadHeader()
+    eraseContent()
+    searchQuizz(quizzId)
+}
+
+
+
 
 function comparador() { 
 	return Math.random() - 0.5; 
 }
 
 
+
+
+/* função restart quizz com problema, lembrar de rever */
 
 loadHeader();

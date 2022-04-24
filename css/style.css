@@ -216,10 +216,12 @@ li{
     position: relative;
     background-color: transparent;
     background: linear-gradient(0deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6));
-    line-height: 227px;
     text-align: center;
     color: white;
     font-size: 39px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .questions{
@@ -322,9 +324,23 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
-@media (max-width: 600px){
+@media (max-width: 760px){
+    
+    main{
+        padding: 0px 0px;
+    }
 
     .quizz-info{
         width: 100vw;
     }
+
+    .questions {
+        width: 100%;
+    }
+
+    .choice > img {
+        width: 163px;
+        height: 113px;
+    }
+
 }
