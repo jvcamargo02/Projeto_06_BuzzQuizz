@@ -161,7 +161,7 @@ main{
 .quizz-info{
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: space-around;
     width: 600px;
     height: 256px;
     padding: 5px 20px;
@@ -198,7 +198,6 @@ form {
 input {
     height: 40px;
     padding: 4px 20px;
-    margin: 10px 0;
     color: #bababa;
     background-color: transparent;
     border-radius: 5px;
@@ -358,6 +357,8 @@ li{
     border-radius: 5px 0 0 5px;
     z-index: 1;
     box-sizing: border-box;
+.pointerEvents {
+    pointer-events: none;
 }
 
 .side-menu ion-icon {
