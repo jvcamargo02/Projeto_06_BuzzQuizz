@@ -10,6 +10,13 @@ const quizzForm = {
     questions: [],
     levels: []
 };
+const userQuizzList = [];
+let toEdit = {
+    title: '',
+    image: '',
+    questions: [],
+    levels: []
+};
 let pageNum = 0;
 let questionsNum;
 let levelsNum;
@@ -60,7 +67,7 @@ function createMenu() {
         
     </div>
     <div class="list-quizzes">
-    Liste todos os Quizzes
+    Lista de todos os Quizzes
         <ul class="list">
         </ul>
     </div>
@@ -155,17 +162,32 @@ function parseData(formData) {
 }
 
 function postQuizz() {
+    const editMode = isNotEmpty(toEdit.questions)
     Object.assign(quizzForm.questions, questions);
     Object.assign(quizzForm.levels, levels);
-    const promise = axios.post(API_URL+"quizzes", quizzForm)
-    promise.then((response) => {
-        const responseString = JSON.stringify(response.data)
-        const responseKey = response.data.key.toString();
-        localStorage.setItem(responseKey, responseString);
-    });
-    promise.catch((code) => {
-        alert(`Erro ao enviar o quizz.\nCódigo ${code.response.status}.\nMais detalhes: ${code.response}`)
-    });
+    if(!editMode) {
+        const promise = axios.post(API_URL+"quizzes", quizzForm)
+        promise.then((response) => {
+            const responseString = JSON.stringify(response.data)
+            const responseKey = response.data.key.toString();
+            localStorage.setItem(responseKey, responseString);
+        });
+        promise.catch((code) => {
+            alert(`Erro ao enviar o quizz.\nCódigo ${code.response.status}.\nMais detalhes: ${code.response}`)
+        });    
+    } else {
+        const quizzID = toEdit.id.toString()
+        console.log(quizzForm, toEdit.key, quizzID)
+        const promise = axios.put(API_URL+`quizzes/${quizzID}`, quizzForm, { header: { "Secret-Key": toEdit.key } })
+        promise.then((response) => {
+            const responseString = JSON.stringify(response.data)
+            const responseKey = response.data.key.toString();
+            localStorage.setItem(responseKey, responseString);
+        });
+        promise.catch((code) => {
+            alert(`Erro ao enviar o quizz.\nCódigo ${code.response.status}.\nMais detalhes: ${code.response}`)
+        });
+    }
     createScreenFour();
 }
 
@@ -205,17 +227,18 @@ function setEventListener() {
 function createScreenOne() {
     // <div class="createQuizzPage">
     // </div>
+    const editMode = isNotEmpty(toEdit.questions)
     document.querySelector("main").innerHTML +=
     `
         <h1 class="forms-header">
             Comece pelo começo
         </h1>
         <form class="question-body">
-            <div class="quizz-info">
-                <input placeholder="Título do seu quizz" type="text" name="quizz" minlength="20" required="required" >
-                <input placeholder="URL da imagem do seu quizz" type="url" name="quizz_url" required="required">
-                <input placeholder="Quantidade de perguntas do quizz" type="number" name="questions" min="3" required="required">
-                <input placeholder="Quantidade de níveis do quizz" type="number" name="levels" min="2" required="required">
+        <div class="quizz-info">
+        <input placeholder="Título do seu quizz" type="text" name="quizz" minlength="20" required="required" value="${editMode ? toEdit.title : ""}">
+                <input placeholder="URL da imagem do seu quizz" type="url" name="quizz_url" required="required" value="${editMode ? toEdit.image : ""}">
+                <input placeholder="Quantidade de perguntas do quizz" type="number" name="questions" min="3" required="required" value="${editMode ? toEdit.questions.length : ""}">
+                <input placeholder="Quantidade de níveis do quizz" type="number" name="levels" min="2" required="required" value="${editMode ? toEdit.levels.length : ""}">
             </div>
             <input type="submit" class="next-button" value="Prosseguir para criar perguntas">
         </form>
@@ -229,7 +252,7 @@ function createScreenOne() {
 // estilizar
 function createScreenTwo(questionsNum) {
     eraseContent();
-
+    const editMode = isNotEmpty(toEdit.questions)
     document.querySelector("main").innerHTML +=
     `
         <h1 class="forms-header">
@@ -242,6 +265,7 @@ function createScreenTwo(questionsNum) {
 
     const formBody = document.querySelector("form");
     for (let i = 0; i < questionsNum; i++) {
+        let editQuantity = toEdit.questions[i].answers.length;
         // esconder o ion-icon por default e só mostrar quando o menu estiver encolhido
         // estudar como implementar um jeito bacana de escolher uma cor.
         formBody.innerHTML +=
@@ -253,20 +277,20 @@ function createScreenTwo(questionsNum) {
                     <ion-icon onclick="show()" name="create-outline"></ion-icon>
                 </h2>
             </span>
-            <input type="text" name="title0${i + 1}" placeholder="Texto da pergunta" required="required">
-            <input type="color" name="title0${i + 1}_color" placeholder="Cor de fundo da pergunta" required="required">
+            <input type="text" name="title0${i + 1}" placeholder="Texto da pergunta" required="required" value="${editMode ? toEdit.questions[i].title : ""}">
+            <input type="color" name="title0${i + 1}_color" placeholder="Cor de fundo da pergunta" required="required" value="${editMode ? toEdit.questions[i].color : ""}">
 
             <h2 class="quizz-context">Resposta correta</h2>
-            <input type="text" name="right0${i + 1}" placeholder="Resposta correta" required="required">
-            <input type="url" name="right0${i + 1}_url" placeholder="URL da imagem" required="required">
+            <input type="text" name="right0${i + 1}" placeholder="Resposta correta" required="required" value="${editMode ? toEdit.questions[i].answers[0].text : ""}">
+            <input type="url" name="right0${i + 1}_url" placeholder="URL da imagem" required="required" value="${editMode ? toEdit.questions[i].answers[0].image : ""}">
 
             <h2 class="quizz-context">Respostas incorretas</h2>
-            <input type="text" name="wrong_0${i + 1}_01" placeholder="Resposta incorreta 1" required="required">
-            <input type="url" name="wrong_0${i + 1}_01_url" placeholder="URL da imagem 1" required="required">
-            <input type="text" name="wrong_0${i + 1}_02" placeholder="Resposta incorreta 2">
-            <input type="url" name="wrong_0${i + 1}_02_url" placeholder="URL da imagem 2">
-            <input type="text" name="wrong_0${i + 1}_03" placeholder="Resposta incorreta 3">
-            <input type="url" name="wrong_0${i + 1}_03_url" placeholder="URL da imagem 3">
+            <input type="text" name="wrong_0${i + 1}_01" placeholder="Resposta incorreta 1" required="required" value="${editMode ? toEdit.questions[i].answers[1].text : ""}">
+            <input type="url" name="wrong_0${i + 1}_01_url" placeholder="URL da imagem 1" required="required" value="${editMode ? toEdit.questions[i].answers[1].image : ""}">
+            <input type="text" name="wrong_0${i + 1}_02" placeholder="Resposta incorreta 2" value="${(editMode && editQuantity >= 3) ? toEdit.questions[i].answers[2].text : ""}">
+            <input type="url" name="wrong_0${i + 1}_02_url" placeholder="URL da imagem 2" value="${(editMode && editQuantity >= 3) ? toEdit.questions[i].answers[2].image : ""}">
+            <input type="text" name="wrong_0${i + 1}_03" placeholder="Resposta incorreta 3"value="${(editMode && editQuantity >= 4) ? toEdit.questions[i].answers[3].text : ""}">
+            <input type="url" name="wrong_0${i + 1}_03_url" placeholder="URL da imagem 3" value="${(editMode && editQuantity >= 4) ? toEdit.questions[i].answers[3].image : ""}">
         </div>            
         `
     }
@@ -299,8 +323,10 @@ function createScreenThree(levels) {
     `;
 
     const formBody = document.querySelector("form");
+    const editMode = isNotEmpty(toEdit.questions)
     for (let i = 0; i < levelsNum; i++) {
         // esconder o ion-icon por default e só mostrar quando o menu estiver encolhido
+        
         formBody.innerHTML +=
         `
             <div>
@@ -310,16 +336,20 @@ function createScreenThree(levels) {
                         <ion-icon onclick="show()" name="create-outline"></ion-icon>
                     </h2>
                 </span>
-                <input type="text" name="title0${i + 1}" placeholder="Título do nível" required="required">
-                <input type="number" name="lvl_percent0${i + 1}" placeholder="% de acerto mínima (sem o %)" min="${levelsArray[i]}" value="${levelsArray[i]}" required="required">
-                <input type="url" name="image0${i + 1}" placeholder="URL da imagem do nível" required="required">
-                <input type="text" name="text0${i + 1}" placeholder="Descrição do nível" minlength="30" required="required">
+                <input type="text" name="title0${i + 1}" placeholder="Título do nível" required="required" value="${editMode ? toEdit.levels[i].title : ""}">
+                <input 
+                    type="number" name="lvl_percent0${i + 1}" placeholder="% de acerto mínima (sem o %)" 
+                    min="${levelsArray[i]}" value="${levelsArray[i]}" 
+                    value="${editMode ? toEdit.levels[i].minValue : ""}"
+                required="required">
+                <input type="url" name="image0${i + 1}" placeholder="URL da imagem do nível" required="required" value="${editMode ? toEdit.levels[i].image : ""}">
+                <input type="text" name="text0${i + 1}" placeholder="Descrição do nível" minlength="30" required="required" value="${editMode ? toEdit.levels[i].text : ""}">
             </div>            
         `
     }
     formBody.innerHTML +=
     `
-        <input type="submit" class="next-button" value="Finalizar Quizz">
+        <input type="submit" class="next-button" value="${editMode ? "Editar quizz" : "Finalizar Quizz"}">
     `
     setEventListener();
 }
@@ -328,10 +358,11 @@ function createScreenThree(levels) {
 // estilizar
 function createScreenFour() {
     eraseContent();
+    const editMode = isNotEmpty(toEdit.questions)
     document.querySelector("main").innerHTML +=
     `
         <div>
-            <h1>Seu quizz está pronto!</h1>
+            <h1>${editMode ? "Seu quizz foi editado!" : "Seu quizz está pronto!"}</h1>
             <img src="${quizzForm.image}" alt="Imagem do quizz criado por você">
             <button onclick="accessNewQuizz()">Acessar Quizz</button>
             <button onclick="createMenu()">Voltar para home</button>
@@ -363,9 +394,44 @@ function listQuizzes() {
 
 }
 
+function quizzToObject() {
+    for(let i = 0; i < localStorage.length; i++) {
+        let quizzString = localStorage.getItem(localStorage.key(i))
+        userQuizzList.push(JSON.parse(quizzString))
+    }
+}
+
+function confirmDelete() {
+    let userResponse = prompt("Tem certeza que deseja apagar este quizz?\nEscreva 'Sim' para confirmar");
+    userResponse = userResponse[0].toUpperCase() + userResponse.splice(0, 0)
+    if(userResponse === "Sim")
+        return true
+    return false;
+}
+
+function editQuizz(index) {
+    toEdit = Object.assign(toEdit, userQuizzList[index])
+    console.log(toEdit)
+    eraseContent();
+    createScreenOne();
+}
+
+function deleteQuizz(index) {
+    const toDelete = userQuizzList[index]
+    if (confirmDelete()) {
+        const promise = axios.delete(API_URL+`${toDelete.id}`, { header: { "Secret-key": toDelete.key } })
+        promise.then(() => alert("O quizz foi deletado com sucesso."))
+        promise.catch((code) => {
+            alert("Houve um erro ao deletar o quizz")
+            console.log(`Erro ${code.response.status}`)
+        })
+        fillUserQuizz();
+    }
+}
+
 function fillUserQuizz() {
     const userQuizzes = document.querySelector(".user-quizzes")
-
+    quizzToObject();
     if (localStorage.length === 0) {
 
         userQuizzes.innerHTML = 
@@ -387,12 +453,23 @@ function fillUserQuizz() {
             Seus Quizzes
             <ion-icon onclick="createQuizz()" name="add-circle" alt="Criar Quizz"></ion-icon>
         </span>
+        `
+        userQuizzList.forEach((quizz, index) => {
+            userQuizzes.innerHTML +=
+        `
             <ul class="userQuizzesList">
                 <li class="user-quizz">
-                    <img class="quizImg" src="../images/Rectangle\ 35.png" alt="">
-                    <h4 class="quizz-title"></h4> 
+                    <div class="side-menu">
+                        <ion-icon onclick="editQuizz(${index})"name="create-outline"></ion-icon>
+                        <ion-icon onclick="deleteQuizz(${index})" name="trash-outline"></ion-icon>
+                    </div>
+                    <img class="quizImg" src="${quizz.image}" alt="">
+                    <h4 class="quizz-title">${quizz.title}</h4> 
                 </li>
-            </ul>`
+            </ul>
+        `
+        })
+
     }
 }
 
@@ -400,7 +477,7 @@ function printQuizzes(promisse) {
 
     const quizzArr = promisse.data
     const listAllQuizzesDOM = document.querySelector(".list")
-
+    
     for (let i = 0; i < quizzArr.length; i++) {
         listAllQuizzesDOM.innerHTML += ` 
         
