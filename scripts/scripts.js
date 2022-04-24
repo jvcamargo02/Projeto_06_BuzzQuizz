@@ -16,6 +16,8 @@ let levelsNum;
 let data;
 let teste;
 let teste2 = []
+let testando;
+let acertos = 0
 
 
 // criei uma função para zerar a tela, pra reaproveitar código e ficar mais bonito
@@ -371,7 +373,7 @@ function fillUserQuizz() {
             <ul class="userQuizzesList">
                 <li class="user-quizz">
                     <img class="quizImg" src="../images/Rectangle\ 35.png" alt="">
-                    <h4 class="quizz-title">Titulo Teste</h4> 
+                    <h4 class="quizz-title"></h4> 
                 </li>
             </ul>`
     }
@@ -448,54 +450,81 @@ function printQuestions(data) {
 
 function printChoices(data, i, question) {
 
-    console.log(data.questions[i].answers)
-    teste = []
+    let alternativas = []
 
     for (let index = 0; index < data.questions[i].answers.length; index++) {
-        console.log(data.questions[i].answers[index])
-        teste.push(data.questions[i].answers[index])
-        teste.sort(comparador)
+        alternativas.push(data.questions[i].answers[index])
+        alternativas.sort(comparador)
        
     }
 
-    for (let ino = 0; ino < teste.length; ino++){
+    for (let ino = 0; ino < alternativas.length; ino++){
 
-       
-            question.innerHTML += `
+        if(alternativas[ino].isCorrectAnswer === false){ 
 
- 
-            
-            
-   
-            <div onclick="clickQuizz(this)" class="choice">
-                    <img src="${teste[ino].image}" alt="Imagem da alternativa">
-                    <h6 class="wrongAnswer defaultAnswer">${teste[ino].text}</h6>
-            </div>
+                question.innerHTML += `
+                    <div onclick="opacity(this)" class="choice">
+                            <img src="${alternativas[ino].image}" alt="Imagem da alternativa">
+                            <h6 class="wrongAnswer defaultAnswer">${alternativas[ino].text}</h6>
+                    </div>
 
-            `
-        
+                    `
+    
+        } else if (alternativas[ino].isCorrectAnswer === true) {
+                    
+                question.innerHTML += `
+                        <div onclick="opacity(this)" class="choice">
+                            <img src="${alternativas[ino].image}" alt="Imagem da alternativa">
+                            <h6 class="correctAnswer defaultAnswer">${alternativas[ino].text}</h6>
+                        </div>
+                        ` 
+        }    
     } 
+}
+
+
+function opacity (element) {
+
+
+    const question = element.parentNode
+    const questionChild = question.children
+    const childrenQuestion = question.children
+
+
+    for(let i = 1; i < questionChild.length; i++) {
+
+
+        const questionChoices = question.children[i]
+        questionChoices.classList.add("opacity")
+    }
+
+    element.classList.remove("opacity")
+
+    
+    for (let i = 1; i < childrenQuestion.length; i++){
+
+        const removerClasseChoice = childrenQuestion[i].children
+        removerClasseChoice[1].classList.remove("defaultAnswer")
+
+
+    }
+
+    countHits(element)
 
 }
 
 
-function clickQuizz (element) {
+function countHits (element) {
 
 
-    const testando = element.innerHTML
-    console.log(testando)
+    const childrenQuestion = element.children[1]
 
-    element.innerHTML = `
-    
-    
-    <div class="mascara">
-    <div  class="choice">
-            
-        </div> 
-            
-        </div>
-    
-    `
+
+    if(childrenQuestion.classList.value === "correctAnswer"){
+
+        acertos++
+    }
+
 }
 
 
@@ -506,26 +535,3 @@ function comparador() {
 
 
 loadHeader();
-
-/*      if(teste[ino].isCorrectAnswer === false){ 
-
-
-    
-} else if (teste[ino].isCorrectAnswer === true) {
-            
-            question.innerHTML += `
-            <div class="mascara">
-                <div class="choice">
-                    <img src="${teste[ino].image}" alt="Imagem da alternativa">
-                    <h6 class="correctAnswer defaultAnswer">${teste[ino].text}</h6>
-                </div>  
-                
-                </div>
-
-                ` 
-        }     
-        
-        
-        <div class="mascara">
-                oi
-                </div>        */

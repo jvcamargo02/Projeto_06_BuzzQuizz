@@ -242,8 +242,15 @@ li{
     font-size: 23px;
     font-weight: 700;
     color: white;
-
+    text-align: center;
 }
+
+.opacity {
+    opacity: 30%;
+    pointer-events: none;
+}
+
+
 
 .question {
     width: 100%;
