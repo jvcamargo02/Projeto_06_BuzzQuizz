@@ -15,10 +15,9 @@ let questionsNum;
 let levelsNum;
 let data;
 let quizzId;
-let teste;
-let teste2 = []
-let testando;
 let acertos = 0
+let respondidas = 0
+let teste;
 
 
 // criei uma função para zerar a tela, pra reaproveitar código e ficar mais bonito
@@ -400,6 +399,7 @@ function printQuizzes(promisse) {
 
     const quizzArr = promisse.data
     const listAllQuizzesDOM = document.querySelector(".list")
+    console.log(listAllQuizzesDOM)
 
     for (let i = 0; i < quizzArr.length; i++) {
         listAllQuizzesDOM.innerHTML += ` 
@@ -416,17 +416,15 @@ function searchQuizz(id) {
 
     quizzId = id
 
-    const promisseQuizz = axios.get(`https://mock-api.driven.com.br/api/v6/buzzquizz/quizzes/${quizzId}`)
-    promisseQuizz.then(openQuizz)
+    const promisseQuizz = axios.get(`${API_URL}quizzes/${quizzId}`)
+    promisseQuizz.then(bannerQuizz)
 }
 
-function openQuizz(response) {
-
-    eraseContent()
+function bannerQuizz (response) {  
+    
     data = response.data
-    const quizzTop = document.querySelector("header")
-    const quizzScreen = document.querySelector("main")
-
+    const quizzTop = document.querySelector("header")   
+    
     quizzTop.innerHTML += `
         <div class="quizzTop">
 
@@ -434,6 +432,17 @@ function openQuizz(response) {
             <h4 class="quizzTitlePage">${data.title}</h4>
 
         </div> `
+
+        openQuizz()
+}
+
+function openQuizz() {
+
+    eraseContent()
+
+    const quizzScreen = document.querySelector("main")
+
+
 
     quizzScreen.innerHTML =
         `<div class="questions">
@@ -455,7 +464,7 @@ function printQuestions(data) {
 
         quizzScreen.innerHTML += `
         
-        <div class="question">
+        <div id="naoRespondida" class="question">
             <div style="background-color: ${data.questions[i].color}" class="questionTitle">
                 <h4>${data.questions[i].title}</h4>
             </div>  `
@@ -499,6 +508,7 @@ function printChoices(data, i, question) {
                         ` 
         }    
     } 
+
 }
 
 
@@ -506,6 +516,7 @@ function opacity (element) {
 
 
     const question = element.parentNode
+    question.removeAttribute("id")
     const questionChild = question.children
     const childrenQuestion = question.children
 
@@ -518,6 +529,7 @@ function opacity (element) {
     }
 
     element.classList.remove("opacity")
+    element.classList.add("pointerEvents")
 
     
     for (let i = 1; i < childrenQuestion.length; i++){
@@ -527,8 +539,10 @@ function opacity (element) {
 
 
     }
+   
 
     countHits(element)
+
 
 }
 
@@ -542,21 +556,86 @@ function countHits (element) {
     if(childrenQuestion.classList.value === "correctAnswer"){
 
         acertos++
+        respondidas++
+    } else {
+        respondidas++
     }
 
+   verifyCounts()
+    
 }
 
-function resultQuizz () {
+
+function verifyCounts () {
+
+
+
+    if (respondidas === data.questions.length ){
+        calculateResult()
+    } else {
+        scrollQuestion()
+    }
 
     
+}
 
+function calculateResult (){
+
+    const result = (acertos/respondidas)*100
+    resultQuizz(result)
+}
+
+function scrollQuestion(){
+    
+    const nextQuestion = document.querySelector("#naoRespondida")
+    nextQuestion.scrollIntoView()
+    
+}
+
+function resultQuizz (result) {
+
+    const main = document.querySelector("main")
+
+    for(let i = 0; i < data.levels.length;i++){
+        console.log(i)
+
+        if(i === (data.levels.length - 1)){
+
+            main.innerHTML += `
+    
+            <div class="quizzResult">
+
+            aff
+
+            </div>`
+
+        const resultQuizz = document.querySelector(".quizzResult")
+        resultQuizz.scrollIntoView()
+
+        } else if (result < data.levels[i+1].minValue){
+            main.innerHTML += `
+    
+            <div class="quizzResult">
+
+                ${data.levels[i].minValue}
+
+            </div>`
+
+        const resultQuizz = document.querySelector(".quizzResult")
+        resultQuizz.scrollIntoView()
+        } 
+
+    }
+
+    
+    
+   
 }
 
 function restartQuizz () {
     
-    loadHeader()
     eraseContent()
-    searchQuizz(quizzId)
+    openQuizz()
 }
 
 
