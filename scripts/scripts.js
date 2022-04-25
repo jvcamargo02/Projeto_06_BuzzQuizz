@@ -469,14 +469,20 @@ function fillUserQuizz() {
         </ul>
        
         `
-        
+        testee()
+    }
+}
+
+function testee () {
+
     const userQuizzesList = document.querySelector(".userQuizzesList")
-      userQuizzesList.innerHTML = ""
+    userQuizzesList.innerHTML = ""
+      
 
         userQuizzList.forEach((quizz, index) => {
-      console.log(userQuizzesList.innerHTML)
-
-            userQuizzesList.innerHTML =
+    console.log("vouIimprimir1")
+            userQuizzesList.innerHTML +=
+        
         `
                 <li class="user-quizz" onclick="searchQuizz(${quizz.id})">
                     <div class="side-menu">
@@ -489,7 +495,7 @@ function fillUserQuizz() {
         `
         })
 
-    }
+
 }
 
 function printQuizzes(promisse) {

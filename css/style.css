@@ -47,7 +47,7 @@ main{
     width: 100%;
     margin: 60px auto 47px auto;
     flex-direction: column;
-    padding: 0 18px;
+    padding: 0 0 0 10px;
 }
 
 .thumb-box{
@@ -231,7 +231,6 @@ input {
 ul{
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
 }
 
 li{
