@@ -395,6 +395,7 @@ function listQuizzes() {
 }
 
 function quizzToObject() {
+    userQuizzList.splice(0, userQuizzList.length);
     for(let i = 0; i < localStorage.length; i++) {
         let quizzString = localStorage.getItem(localStorage.key(i))
         userQuizzList.push(JSON.parse(quizzString))
@@ -438,9 +439,7 @@ function fillUserQuizz() {
     const userQuizzes = document.querySelector(".user-quizzes")
     quizzToObject();
 
-
     if (localStorage.length === 0) {
-
         userQuizzes.innerHTML = 
         `
             <div class="thumb-box">
@@ -462,35 +461,23 @@ function fillUserQuizz() {
          </span> 
         <ul class="userQuizzesList">
         </ul>
-       
         `
-        testee()
-    }
-}
-
-function testee () {
-
-    const userQuizzesList = document.querySelector(".userQuizzesList")
-    userQuizzesList.innerHTML = ""
-      
-
+        const userQuizzesList = document.querySelector(".userQuizzesList")
         userQuizzList.forEach((quizz, index) => {
-    console.log("vouIimprimir1")
+            console.log("vouIimprimir1")
             userQuizzesList.innerHTML +=
-        
-        `
-                <li class="user-quizz" onclick="searchQuizz(${quizz.id})">
+            `
+                <li class="user-quizz">
                     <div class="side-menu">
                         <ion-icon onclick="editQuizz(${index})"name="create-outline"></ion-icon>
                         <ion-icon onclick="deleteQuizz(${index})" name="trash-outline"></ion-icon>
                     </div>
                     <img class="quizImg" src="${quizz.image}" alt="">
-                    <h4 class="quizz-title">${quizz.title}</h4> 
+                    <h4 onclick="searchQuizz(${quizz.id})" class="quizz-title">${quizz.title}</h4> 
                 </li>
-        `
+            `
         })
-
-
+    }
 }
 
 function printQuizzes(promisse) {
