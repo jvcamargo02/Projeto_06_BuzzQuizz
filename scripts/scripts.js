@@ -442,6 +442,8 @@ function deleteQuizz(index) {
 function fillUserQuizz() {
     const userQuizzes = document.querySelector(".user-quizzes")
     quizzToObject();
+
+
     if (localStorage.length === 0) {
 
         userQuizzes.innerHTML = 
@@ -458,16 +460,23 @@ function fillUserQuizz() {
             </div>
         `
     } else {
-        userQuizzes.innerHTML += `
+        userQuizzes.innerHTML = `
         <span class="quizz-button-small">
             Seus Quizzes
             <ion-icon onclick="createQuizz()" name="add-circle" alt="Criar Quizz"></ion-icon>
-            <ul class="userQuizzesList">
-            </ul>
-        </span>
+         </span> 
+        <ul class="userQuizzesList">
+        </ul>
+       
         `
+        
+    const userQuizzesList = document.querySelector(".userQuizzesList")
+      userQuizzesList.innerHTML = ""
+
         userQuizzList.forEach((quizz, index) => {
-            userQuizzes.innerHTML +=
+      console.log(userQuizzesList.innerHTML)
+
+            userQuizzesList.innerHTML =
         `
                 <li class="user-quizz" onclick="searchQuizz(${quizz.id})">
                     <div class="side-menu">
