@@ -399,7 +399,6 @@ function printQuizzes(promisse) {
 
     const quizzArr = promisse.data
     const listAllQuizzesDOM = document.querySelector(".list")
-    console.log(listAllQuizzesDOM)
 
     for (let i = 0; i < quizzArr.length; i++) {
         listAllQuizzesDOM.innerHTML += ` 
@@ -439,6 +438,8 @@ function bannerQuizz (response) {
 function openQuizz() {
 
     eraseContent()
+    respondidas = 0
+    acertos = 0
 
     const quizzScreen = document.querySelector("main")
 
@@ -583,6 +584,7 @@ function calculateResult (){
 
     const result = (acertos/respondidas)*100
     resultQuizz(result)
+    setTimeout(scrollToResult,2000)
 }
 
 function scrollQuestion(){
@@ -595,41 +597,48 @@ function scrollQuestion(){
 function resultQuizz (result) {
 
     const main = document.querySelector("main")
+    console.log(result)
+
+    main.innerHTML += `
+    
+            <div class="quizzResult">
+            </div>`
+
+            renderResult(result)
+
+}
+
+function renderResult (result) {
+
+    const divResult = document.querySelector(".quizzResult")
 
     for(let i = 0; i < data.levels.length;i++){
         console.log(i)
 
-        if(i === (data.levels.length - 1)){
+        if(result  >= data.levels[i].minValue){
 
-            main.innerHTML += `
-    
-            <div class="quizzResult">
+            divResult.innerHTML = `
+                <div class="resultTitle">
+                    <h6>${result.toFixed()}% de acerto: ${data.levels[i].title}
+                </div>
+                <div class="resultBox">
+                <img src="${data.levels[i].image}" alt="Imagem do nivel de acertos">
+                <p>${data.levels[i].text}</p>
+                </div>
+            
+            `
 
-            aff
+        
 
-            </div>`
-
+        }
         const resultQuizz = document.querySelector(".quizzResult")
-        resultQuizz.scrollIntoView()
+            resultQuizz.scrollIntoView()
+    }        
+}
 
-        } else if (result < data.levels[i+1].minValue){
-            main.innerHTML += `
-    
-            <div class="quizzResult">
-
-                ${data.levels[i].minValue}
-
-            </div>`
-
-        const resultQuizz = document.querySelector(".quizzResult")
-        resultQuizz.scrollIntoView()
-        } 
-
-    }
-
-    
-    
-   
+function scrollToResult () {
+    const result = document.querySelector(".quizzResult")
+    result.scrollIntoView()
 }
 
 function restartQuizz () {

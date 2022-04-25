@@ -254,6 +254,7 @@ li{
     display: flex;
     align-items: center;
     justify-content: center;
+    line-break: anywhere;
 }
 
 .questions{
@@ -262,7 +263,7 @@ li{
     flex-direction: column;
     align-items: center;
     margin-left: auto; margin-right: auto;
-    margin-bottom: 170px;
+    margin-bottom: 50px;
 }
 
 .questionTitle{
@@ -277,6 +278,8 @@ li{
     font-weight: 700;
     color: white;
     text-align: center;
+    line-break: anywhere;
+
 }
 
 .opacity {
@@ -326,6 +329,48 @@ li{
 
 }
 
+.quizzResult {
+    width: 759px;
+    margin-left: auto; margin-right: auto;
+    background-color: white;
+    padding: 18px;
+    box-shadow: 0px 0px 10px 0px #0000000D;
+    margin-bottom: 57px;
+
+}
+
+.resultTitle {
+    min-height: 99px;
+    background-color: #ec362d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 23px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 18px;
+    text-align: center;
+    line-break: anywhere;
+
+}
+
+.resultBox {
+    display: flex;
+    background-color: white;
+}
+
+.resultBox > img {
+    width: 364px;
+    max-height: 300px;
+    margin-right: 20px;
+}
+
+.resultBox > p {
+    font-size: 19px;
+    line-height: 25px;
+    line-break: anywhere;
+}
+
 .correctAnswer{
     color:green
 }
@@ -359,7 +404,7 @@ input[type=number] {
   margin: 0;
 }
 
-@media (max-width: 760px){
+@media (max-width: 1100px){
     
     main{
         padding: 0px 0px;
@@ -378,4 +423,26 @@ input[type=number] {
         height: 113px;
     }
 
+    .choice:nth-child(2n+1) {
+        margin-left: 0px;
+    }
+    .choice {
+        margin: 0px 10px;
+    }
+
+    .quizzResult {
+        width: 100%; 
+    }
+
+    .resultBox {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .resultBox > img {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
 }
