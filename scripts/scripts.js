@@ -60,7 +60,7 @@ function loadQuizz() {
 function createMenu() {
     const hasQuizz = userQuizzes()
     // aqui retorna true ou false. Então, dependendo da resposta, habilita um estilo no menu ou outro. o HTML vai ser o mesmo
-    document.querySelector("main").innerHTML +=
+    document.querySelector("main").innerHTML =
     `
     <div class="user-quizzes">
         
@@ -177,7 +177,7 @@ function postQuizz() {
     } else {
         const quizzID = toEdit.id.toString()
         console.log(quizzForm, toEdit.key, quizzID)
-        const promise = axios.put(API_URL+`quizzes/${quizzID}`, quizzForm, { header: { "Secret-Key": toEdit.key } })
+        const promise = axios.put(API_URL+`quizzes/${quizzID}`, quizzForm, { headers: { "Secret-Key": toEdit.key } })
         promise.then((response) => {
             const responseString = JSON.stringify(response.data)
             const responseKey = response.data.key.toString();
@@ -362,9 +362,10 @@ function createScreenFour() {
     `
         <div>
             <h1>${editMode ? "Seu quizz foi editado!" : "Seu quizz está pronto!"}</h1>
-            <img src="${quizzForm.image}" alt="Imagem do quizz criado por você">
-            <button onclick="accessNewQuizz()">Acessar Quizz</button>
-            <button onclick="createMenu()">Voltar para home</button>
+            <img  src="${quizzForm.image}" alt="Imagem do quizz criado por você">
+            <h4>${quizzForm.title}</h4>
+            <input class="next-button quizz-button-small" onclick="accessNewQuizz()" value="Acessar Quizz">
+            <input class="next-button quizz-button-small" onclick="createMenu()" value="Voltar para home">
         </div>
     `
     emptyArray(questions);
@@ -418,7 +419,7 @@ function editQuizz(index) {
 function deleteQuizz(index) {
     const toDelete = userQuizzList[index]
     if (confirmDelete()) {
-        const promise = axios.delete(API_URL+`${toDelete.id}`, { header: { "Secret-key": toDelete.key } })
+        const promise = axios.delete(API_URL+`${toDelete.id}`, { headers: { "Secret-key": toDelete.key } })
         promise.then(() => alert("O quizz foi deletado com sucesso."))
         promise.catch((code) => {
             alert("Houve um erro ao deletar o quizz")
@@ -451,13 +452,14 @@ function fillUserQuizz() {
         <span class="quizz-button-small">
             Seus Quizzes
             <ion-icon onclick="createQuizz()" name="add-circle" alt="Criar Quizz"></ion-icon>
+            <ul class="userQuizzesList">
+            </ul>
         </span>
         `
         userQuizzList.forEach((quizz, index) => {
             userQuizzes.innerHTML +=
         `
-            <ul class="userQuizzesList">
-                <li class="user-quizz">
+                <li class="user-quizz" onclick="searchQuizz(${quizz.id})">
                     <div class="side-menu">
                         <ion-icon onclick="editQuizz(${index})"name="create-outline"></ion-icon>
                         <ion-icon onclick="deleteQuizz(${index})" name="trash-outline"></ion-icon>
@@ -465,7 +467,6 @@ function fillUserQuizz() {
                     <img class="quizImg" src="${quizz.image}" alt="">
                     <h4 class="quizz-title">${quizz.title}</h4> 
                 </li>
-            </ul>
         `
         })
 
