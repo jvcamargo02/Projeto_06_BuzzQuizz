@@ -327,21 +327,21 @@ function createScreenThree(levels) {
         
         formBody.innerHTML +=
         `
-            <div>
-                <span>
-                    <h2 class="quizz-context">
+            <div  class="quizz-info">
+                <span onclick="hiddenInput(this)" class="cursor">
+                    <h2 class="quizz-context levelPage">
                         Nível ${i + 1}
-                        <ion-icon onclick="show()" name="create-outline"></ion-icon>
+                        <ion-icon name="create-outline"></ion-icon>
                     </h2>
                 </span>
-                <input type="text" name="title0${i + 1}" placeholder="Título do nível" required="required" value="${editMode ? toEdit.levels[i].title : ""}">
-                <input 
+                <input class="hidden" type="text" name="title0${i + 1}" placeholder="Título do nível" required="required" value="${editMode ? toEdit.levels[i].title : ""}">
+                <input class="hidden"
                     type="number" name="lvl_percent0${i + 1}" placeholder="% de acerto mínima (sem o %)" 
                     min="${levelsArray[i]}" value="${levelsArray[i]}" 
                     value="${editMode ? toEdit.levels[i].minValue : ""}"
                 required="required">
-                <input type="url" name="image0${i + 1}" placeholder="URL da imagem do nível" required="required" value="${editMode ? toEdit.levels[i].image : ""}">
-                <input type="text" name="text0${i + 1}" placeholder="Descrição do nível" minlength="30" required="required" value="${editMode ? toEdit.levels[i].text : ""}">
+                <input class="hidden" type="url" name="image0${i + 1}" placeholder="URL da imagem do nível" required="required" value="${editMode ? toEdit.levels[i].image : ""}">
+                <input class="hidden" type="text" name="text0${i + 1}" placeholder="Descrição do nível" minlength="30" required="required" value="${editMode ? toEdit.levels[i].text : ""}">
             </div>            
         `
     }
@@ -357,12 +357,14 @@ function createScreenFour() {
     const editMode = isNotEmpty(toEdit.questions)
     document.querySelector("main").innerHTML +=
     `
-        <div>
-            <h1>${editMode ? "Seu quizz foi editado!" : "Seu quizz está pronto!"}</h1>
-            <img  src="${quizzForm.image}" alt="Imagem do quizz criado por você">
-            <h4>${quizzForm.title}</h4>
-            <input class="next-button quizz-button-small" onclick="accessNewQuizz()" value="Acessar Quizz">
-            <input class="next-button quizz-button-small" onclick="createMenu()" value="Voltar para home">
+        <div class="successScreen">
+            <h1 class="forms-header" >${editMode ? "Seu quizz foi editado!" : "Seu quizz está pronto!"}</h1>
+            <div class="successDiv">
+                <img class="marginSuccess" src="${quizzForm.image}" alt="Imagem do quizz criado por você">
+                <h4 class="quizz-title">${quizzForm.title}</h4>
+            </div>
+            <input class="restartQuizz" onclick="accessNewQuizz()" value="Acessar Quizz">
+            <input class="backToHome" onclick="createMenu()" value="Voltar para home">
         </div>
     `
     emptyArray(questions);
@@ -683,7 +685,13 @@ function resultQuizz (result) {
     main.innerHTML += `
     
             <div class="quizzResult">
-            </div>`
+            </div>
+            <div class="quizzRestarter">
+                <button class="restartQuizz" onclick="restartQuizz()">Reiniciar Quizz</button>
+                <button class="backToHome" onclick="backToHome()">Voltar para home</button>
+            </div>
+            
+            `
 
             renderResult(result)
 
@@ -726,6 +734,13 @@ function restartQuizz () {
     
     eraseContent()
     openQuizz()
+    
+}
+
+function backToHome () {
+
+    window.scrollTo(0,0)
+    loadHeader()
 }
 
 
@@ -735,6 +750,22 @@ function comparador() {
 	return Math.random() - 0.5; 
 }
 
+function hiddenInput (element) {
+
+    const info = element.parentNode
+    const level = info.children
+    const ionIcon = element.children[0].children[0]
+    ionIcon.classList.toggle("hidden")
+
+    
+    for(let i=1; i < level.length; i++) {
+
+        level[i].classList.toggle("hidden")
+    }
+
+
+
+}
 
 
 
