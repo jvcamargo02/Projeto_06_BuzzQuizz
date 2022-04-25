@@ -27,16 +27,37 @@ let respondidas = 0
 let teste;
 
 
-// criei uma função para zerar a tela, pra reaproveitar código e ficar mais bonito
-// também isso nos tira o trabalho de ter que ficar mudando z-index e outros indicadores de profundidade do css
-
 function eraseContent() {
     document.querySelector("main").innerHTML = "";
     window.scrollTo(0,0)
 }
 
+function setFieldMessage() {
+    const inputs = document.querySelectorAll("input")
+    const inArray = Array.from(inputs)
+    inArray.forEach((field) => {
+        if(field.type !== "submit") {
+            switch(field.type) {
+                case "number":
+                    if (field.validity.rangeUnderflow) 
+                        field.setCustomValidity(`Insira um valor igual a ${field.min} ou maior`);
+                    break;
+                case "text":
+                    if (field.validity.tooShort) 
+                        field.setCustomValidity(`O campo deve possuir pelo menos ${field.minLength} caracteres`);
+                    break;
+                case "url":
+                    if (field.validity.typeMismatch) 
+                        field.setCustomValidity(`Insira uma URL válida`);
+                    break;
+                default:
+                    break;
+            }
+        }
+    })
+}
+
 function loadHeader() {
-    // injetar a classe css junto, quando hovuer
     document.querySelector("body").innerHTML =
     `
         <header>
@@ -59,7 +80,6 @@ function loadQuizz() {
 
 function createMenu() {
     const hasQuizz = userQuizzes()
-    // aqui retorna true ou false. Então, dependendo da resposta, habilita um estilo no menu ou outro. o HTML vai ser o mesmo
     document.querySelector("main").innerHTML =
     `
     <div class="user-quizzes">
@@ -72,13 +92,6 @@ function createMenu() {
     </div>
 
     `
-    // quizz-button-big e quizz-button-small são os estilos a serem selecionados, 
-    // ou então só escreve um deles e não o outro
-    // como ficar melhor, qualquer coisa é só trocar a lógica um pouco :p
-
-    // chama uma função aqui pra carregar todos os quizzes do usuário na thumb-box
-    // thumb-box de thumbnail + vou deixar a função comentada pra depois
-
     fillUserQuizz();
     listQuizzes();
 }
@@ -219,13 +232,7 @@ function setEventListener() {
     pageForm.addEventListener("submit", handleData)
 }
 
-// estilizar
-// https://www.w3schools.com/howto/howto_css_hide_arrow_number.asp
-// tem que adicionar isso aqui no estilo pra não aparecer umas setinhas na lateral
-// dos campos em que vão números
 function createScreenOne() {
-    // <div class="createQuizzPage">
-    // </div>
     const editMode = isNotEmpty(toEdit.questions)
     document.querySelector("main").innerHTML +=
     `
@@ -244,11 +251,8 @@ function createScreenOne() {
     `
 
     setEventListener();
-    // document.querySelector("input[type='number']") usar isso aqui para selecionar os campos numéricos, talvez?
 }
-// estilizar
 
-// estilizar
 function createScreenTwo(questionsNum) {
     eraseContent();
     const editMode = isNotEmpty(toEdit.questions)
@@ -268,7 +272,6 @@ function createScreenTwo(questionsNum) {
             editQuantity = toEdit.questions[i].answers.length;
         }
         // esconder o ion-icon por default e só mostrar quando o menu estiver encolhido
-        // estudar como implementar um jeito bacana de escolher uma cor.
         formBody.innerHTML +=
         `
         <div>
@@ -301,14 +304,8 @@ function createScreenTwo(questionsNum) {
         <input type="submit" class="next-button" value="Prosseguir para criar níveis">
     `
     setEventListener();
-    // vou ter que passar os niveis como parametro pra poder chamar no fim da função e evitar pepinos
-    // createQuestionLevels()
-    // validar os dados antes de prosseguir, planejar isso depois
-    // const questions = []
 }
-// estilizar
 
-// estilizar
 function createScreenThree(levels) {
     const levelsNum = levels;
     const levelsArray = calculateLevels(levelsNum)
@@ -354,9 +351,7 @@ function createScreenThree(levels) {
     `
     setEventListener();
 }
-// estilizar
 
-// estilizar
 function createScreenFour() {
     eraseContent();
     const editMode = isNotEmpty(toEdit.questions)
