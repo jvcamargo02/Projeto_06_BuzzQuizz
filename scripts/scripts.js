@@ -60,7 +60,7 @@ function loadQuizz() {
 function createMenu() {
     const hasQuizz = userQuizzes()
     // aqui retorna true ou false. Então, dependendo da resposta, habilita um estilo no menu ou outro. o HTML vai ser o mesmo
-    document.querySelector("main").innerHTML +=
+    document.querySelector("main").innerHTML =
     `
     <div class="user-quizzes">
         
@@ -177,7 +177,7 @@ function postQuizz() {
     } else {
         const quizzID = toEdit.id.toString()
         console.log(quizzForm, toEdit.key, quizzID)
-        const promise = axios.put(API_URL+`quizzes/${quizzID}`, quizzForm, { header: { "Secret-Key": toEdit.key } })
+        const promise = axios.put(API_URL+`quizzes/${quizzID}`, quizzForm, { headers: { "Secret-Key": toEdit.key } })
         promise.then((response) => {
             const responseString = JSON.stringify(response.data)
             const responseKey = response.data.key.toString();
@@ -261,10 +261,12 @@ function createScreenTwo(questionsNum) {
         
         </form>
     `;
-
+    let editQuantity = 0;
     const formBody = document.querySelector("form");
     for (let i = 0; i < questionsNum; i++) {
-        let editQuantity = toEdit.questions[i].answers.length;
+        if(editMode) {
+            editQuantity = toEdit.questions[i].answers.length;
+        }
         // esconder o ion-icon por default e só mostrar quando o menu estiver encolhido
         // estudar como implementar um jeito bacana de escolher uma cor.
         formBody.innerHTML +=
@@ -361,10 +363,13 @@ function createScreenFour() {
     document.querySelector("main").innerHTML +=
     `
         <div class="successScreen">
-            <h1 class="forms-header">${editMode ? "Seu quizz foi editado!" : "Seu quizz está pronto!"}</h1>
-            <img class="marginSuccess" src="${quizzForm.image}" alt="Imagem do quizz criado por você">
-            <button class="restartQuizz" onclick="accessNewQuizz()">Acessar Quizz</button>
-            <button class="backToHome" onclick="createMenu()">Voltar para home</button>
+            <h1 class="forms-header" >${editMode ? "Seu quizz foi editado!" : "Seu quizz está pronto!"}</h1>
+            <div class="successDiv">
+                <img class="marginSuccess" src="${quizzForm.image}" alt="Imagem do quizz criado por você">
+                <h4 class="quizz-title">${quizzForm.title}</h4>
+            </div>
+            <input class="restartQuizz" onclick="accessNewQuizz()" value="Acessar Quizz">
+            <input class="backToHome" onclick="createMenu()" value="Voltar para home">
         </div>
     `
     emptyArray(questions);
@@ -373,7 +378,8 @@ function createScreenFour() {
 // estilizar
 
 function accessNewQuizz() {
-    const quizzId = localStorage.getItem(localStorage.key(localStorage.length-1)).id;
+    const newQuizzToObject = JSON.parse(localStorage.getItem(localStorage.key(localStorage.length-1)))
+    const quizzId = newQuizzToObject.id;
     searchQuizz(quizzId);
 }
 
@@ -401,9 +407,9 @@ function quizzToObject() {
 }
 
 function confirmDelete() {
-    let userResponse = prompt("Tem certeza que deseja apagar este quizz?\nEscreva 'Sim' para confirmar");
-    userResponse = userResponse[0].toUpperCase() + userResponse.splice(0, 0)
-    if(userResponse === "Sim")
+    let userResponse = prompt("Tem certeza que deseja apagar este quizz?\nEscreva 'sim' para confirmar");
+    userResponse = userResponse.toLowerCase();
+    if(userResponse === "sim")
         return true
     return false;
 }
@@ -418,12 +424,17 @@ function editQuizz(index) {
 function deleteQuizz(index) {
     const toDelete = userQuizzList[index]
     if (confirmDelete()) {
-        const promise = axios.delete(API_URL+`${toDelete.id}`, { header: { "Secret-key": toDelete.key } })
-        promise.then(() => alert("O quizz foi deletado com sucesso."))
+        console.log(toDelete.id)
+        const promise = axios.delete(API_URL+`quizzes/${toDelete.id}`, { headers: { "Secret-Key": toDelete.key } })
+        promise.then(() => {
+            alert("O quizz foi deletado com sucesso.");
+            localStorage.removeItem(toDelete.key);
+        })
         promise.catch((code) => {
             alert("Houve um erro ao deletar o quizz")
             console.log(`Erro ${code.response.status}`)
         })
+        eraseContent();
         fillUserQuizz();
     }
 }
@@ -451,13 +462,14 @@ function fillUserQuizz() {
         <span class="quizz-button-small">
             Seus Quizzes
             <ion-icon onclick="createQuizz()" name="add-circle" alt="Criar Quizz"></ion-icon>
+            <ul class="userQuizzesList">
+            </ul>
         </span>
         `
         userQuizzList.forEach((quizz, index) => {
             userQuizzes.innerHTML +=
         `
-            <ul class="userQuizzesList">
-                <li class="user-quizz">
+                <li class="user-quizz" onclick="searchQuizz(${quizz.id})">
                     <div class="side-menu">
                         <ion-icon onclick="editQuizz(${index})"name="create-outline"></ion-icon>
                         <ion-icon onclick="deleteQuizz(${index})" name="trash-outline"></ion-icon>
@@ -465,7 +477,6 @@ function fillUserQuizz() {
                     <img class="quizImg" src="${quizz.image}" alt="">
                     <h4 class="quizz-title">${quizz.title}</h4> 
                 </li>
-            </ul>
         `
         })
 
