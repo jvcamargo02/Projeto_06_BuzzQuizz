@@ -261,10 +261,12 @@ function createScreenTwo(questionsNum) {
         
         </form>
     `;
-
+    let editQuantity = 0;
     const formBody = document.querySelector("form");
     for (let i = 0; i < questionsNum; i++) {
-        let editQuantity = toEdit.questions[i].answers.length;
+        if(editMode) {
+            editQuantity = toEdit.questions[i].answers.length;
+        }
         // esconder o ion-icon por default e só mostrar quando o menu estiver encolhido
         // estudar como implementar um jeito bacana de escolher uma cor.
         formBody.innerHTML +=
@@ -374,7 +376,8 @@ function createScreenFour() {
 // estilizar
 
 function accessNewQuizz() {
-    const quizzId = localStorage.getItem(localStorage.key(localStorage.length-1)).id;
+    const newQuizzToObject = JSON.parse(localStorage.getItem(localStorage.key(localStorage.length-1)))
+    const quizzId = newQuizzToObject.id;
     searchQuizz(quizzId);
 }
 
@@ -402,9 +405,9 @@ function quizzToObject() {
 }
 
 function confirmDelete() {
-    let userResponse = prompt("Tem certeza que deseja apagar este quizz?\nEscreva 'Sim' para confirmar");
-    userResponse = userResponse[0].toUpperCase() + userResponse.splice(0, 0)
-    if(userResponse === "Sim")
+    let userResponse = prompt("Tem certeza que deseja apagar este quizz?\nEscreva 'sim' para confirmar");
+    userResponse = userResponse.toLowerCase();
+    if(userResponse === "sim")
         return true
     return false;
 }
@@ -419,12 +422,17 @@ function editQuizz(index) {
 function deleteQuizz(index) {
     const toDelete = userQuizzList[index]
     if (confirmDelete()) {
-        const promise = axios.delete(API_URL+`${toDelete.id}`, { headers: { "Secret-key": toDelete.key } })
-        promise.then(() => alert("O quizz foi deletado com sucesso."))
+        console.log(toDelete.id)
+        const promise = axios.delete(API_URL+`quizzes/${toDelete.id}`, { headers: { "Secret-Key": toDelete.key } })
+        promise.then(() => {
+            alert("O quizz foi deletado com sucesso.");
+            localStorage.removeItem(toDelete.key);
+        })
         promise.catch((code) => {
             alert("Houve um erro ao deletar o quizz")
             console.log(`Erro ${code.response.status}`)
         })
+        eraseContent();
         fillUserQuizz();
     }
 }
