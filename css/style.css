@@ -402,6 +402,9 @@ li{
     border-radius: 5px 0 0 5px;
     z-index: 1;
     box-sizing: border-box;
+}
+
+
 .pointerEvents {
     pointer-events: none;
 }
