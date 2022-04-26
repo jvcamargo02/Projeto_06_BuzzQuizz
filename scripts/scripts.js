@@ -181,10 +181,9 @@ function postQuizz() {
         });
         promise.catch((code) => {
             alert(`Erro ao enviar o quizz.\nCódigo ${code.response.status}.\nMais detalhes: ${code.response}`)
-        });    
+        });
     } else {
         const quizzID = toEdit.id.toString()
-        console.log(quizzForm, toEdit.key, quizzID)
         const promise = axios.put(API_URL+`quizzes/${quizzID}`, quizzForm, { headers: { "Secret-Key": toEdit.key } })
         promise.then((response) => {
             const responseString = JSON.stringify(response.data)
@@ -195,6 +194,7 @@ function postQuizz() {
             alert(`Erro ao enviar o quizz.\nCódigo ${code.response.status}.\nMais detalhes: ${code.response}`)
         });
     }
+    pageNum = 0;
     createScreenFour();
 }
 
@@ -235,8 +235,8 @@ function createScreenOne() {
             Comece pelo começo
         </h1>
         <form class="question-body">
-        <div class="quizz-info">
-        <input placeholder="Título do seu quizz" type="text" name="quizz" minlength="20" required value="${editMode ? toEdit.title : ""}">
+            <div class="quizz-info">
+                <input placeholder="Título do seu quizz" type="text" name="quizz" minlength="20" required value="${editMode ? toEdit.title : ""}">
                 <input placeholder="URL da imagem do seu quizz" type="url" name="quizz_url" required value="${editMode ? toEdit.image : ""}">
                 <input placeholder="Quantidade de perguntas do quizz" type="number" name="questions" min="3" required value="${editMode ? toEdit.questions.length : ""}">
                 <input placeholder="Quantidade de níveis do quizz" type="number" name="levels" min="2" required value="${editMode ? toEdit.levels.length : ""}">
@@ -269,27 +269,27 @@ function createScreenTwo(questionsNum) {
         // esconder o ion-icon por default e só mostrar quando o menu estiver encolhido
         formBody.innerHTML +=
         `
-        <div>
-            <span>
-                <h2 class="quizz-context">
+        <div class="quizz-info">
+            <span onclick="hiddenInput(this)" class="cursor">
+                <h2 class="quizz-context levelPage">
                     Pergunta ${i + 1}
-                    <ion-icon onclick="show()" name="create-outline"></ion-icon>
+                    <ion-icon name="create-outline"></ion-icon>
                 </h2>
             </span>
-            <input type="text" name="title0${i + 1}" placeholder="Texto da pergunta" required value="${editMode ? toEdit.questions[i].title : ""}">
-            <input type="color" name="title0${i + 1}_color" placeholder="Cor de fundo da pergunta" required value="${editMode ? toEdit.questions[i].color : ""}">
+            <input class="hidden" type="text" name="title0${i + 1}" placeholder="Texto da pergunta" required value="${editMode ? toEdit.questions[i].title : ""}">
+            <input class="hidden" type="color" name="title0${i + 1}_color" placeholder="Cor de fundo da pergunta" required value="${editMode ? toEdit.questions[i].color : ""}">
 
-            <h2 class="quizz-context">Resposta correta</h2>
-            <input type="text" name="right0${i + 1}" placeholder="Resposta correta" required value="${editMode ? toEdit.questions[i].answers[0].text : ""}">
-            <input type="url" name="right0${i + 1}_url" placeholder="URL da imagem" required value="${editMode ? toEdit.questions[i].answers[0].image : ""}">
+            <h2 class="hidden quizz-context">Resposta correta</h2>
+            <input class="hidden" type="text" name="right0${i + 1}" placeholder="Resposta correta" required value="${editMode ? toEdit.questions[i].answers[0].text : ""}">
+            <input class="hidden" type="url" name="right0${i + 1}_url" placeholder="URL da imagem" required value="${editMode ? toEdit.questions[i].answers[0].image : ""}">
 
-            <h2 class="quizz-context">Respostas incorretas</h2>
-            <input type="text" name="wrong_0${i + 1}_01" placeholder="Resposta incorreta 1" required value="${editMode ? toEdit.questions[i].answers[1].text : ""}">
-            <input type="url" name="wrong_0${i + 1}_01_url" placeholder="URL da imagem 1" required value="${editMode ? toEdit.questions[i].answers[1].image : ""}">
-            <input type="text" name="wrong_0${i + 1}_02" placeholder="Resposta incorreta 2" value="${(editMode && editQuantity >= 3) ? toEdit.questions[i].answers[2].text : ""}">
-            <input type="url" name="wrong_0${i + 1}_02_url" placeholder="URL da imagem 2" value="${(editMode && editQuantity >= 3) ? toEdit.questions[i].answers[2].image : ""}">
-            <input type="text" name="wrong_0${i + 1}_03" placeholder="Resposta incorreta 3"value="${(editMode && editQuantity >= 4) ? toEdit.questions[i].answers[3].text : ""}">
-            <input type="url" name="wrong_0${i + 1}_03_url" placeholder="URL da imagem 3" value="${(editMode && editQuantity >= 4) ? toEdit.questions[i].answers[3].image : ""}">
+            <h2 class="hidden quizz-context">Respostas incorretas</h2>
+            <input class="hidden" type="text" name="wrong_0${i + 1}_01" placeholder="Resposta incorreta 1" required value="${editMode ? toEdit.questions[i].answers[1].text : ""}">
+            <input class="hidden" type="url" name="wrong_0${i + 1}_01_url" placeholder="URL da imagem 1" required value="${editMode ? toEdit.questions[i].answers[1].image : ""}">
+            <input class="hidden" type="text" name="wrong_0${i + 1}_02" placeholder="Resposta incorreta 2" value="${(editMode && editQuantity >= 3) ? toEdit.questions[i].answers[2].text : ""}">
+            <input class="hidden" type="url" name="wrong_0${i + 1}_02_url" placeholder="URL da imagem 2" value="${(editMode && editQuantity >= 3) ? toEdit.questions[i].answers[2].image : ""}">
+            <input class="hidden" type="text" name="wrong_0${i + 1}_03" placeholder="Resposta incorreta 3"value="${(editMode && editQuantity >= 4) ? toEdit.questions[i].answers[3].text : ""}">
+            <input class="hidden" type="url" name="wrong_0${i + 1}_03_url" placeholder="URL da imagem 3" value="${(editMode && editQuantity >= 4) ? toEdit.questions[i].answers[3].image : ""}">
         </div>            
         `
     }
@@ -347,6 +347,20 @@ function createScreenThree(levels) {
     setEventListener();
 }
 
+function clearEditHistory() {
+    emptyArray(toEdit.questions);
+    emptyArray(toEdit.levels);
+    toEdit.title = '';
+    toEdit.image = '';
+}
+
+function clearFormHistory() {
+    emptyArray(quizzForm.questions)
+    emptyArray(quizzForm.levels)
+    quizzForm.title = '';
+    quizzForm.image = '';
+}
+
 function createScreenFour() {
     eraseContent();
     const editMode = isNotEmpty(toEdit.questions)
@@ -362,6 +376,8 @@ function createScreenFour() {
             <input class="backToHome" onclick="createMenu()" value="Voltar para home">
         </div>
     `
+    clearEditHistory();
+    clearFormHistory();
     emptyArray(questions);
     emptyArray(levels);
 }
@@ -379,8 +395,7 @@ function calculateLevels(num) {
     for (let i = 0; i < num; i++) {
         percentageArray.push(step * i)
     }
-    console.log(percentageArray)
-    return percentageArray
+    return percentageArray;
 }
 
 function listQuizzes() {
@@ -398,16 +413,13 @@ function quizzToObject() {
 }
 
 function confirmDelete() {
-    let userResponse = prompt("Tem certeza que deseja apagar este quizz?\nEscreva 'sim' para confirmar");
-    userResponse = userResponse.toLowerCase();
-    if(userResponse === "sim")
-        return true
+    if(window.confirm("Tem certeza que deseja apagar este quizz?"))
+        return true;
     return false;
 }
 
 function editQuizz(index) {
     toEdit = Object.assign(toEdit, userQuizzList[index])
-    console.log(toEdit)
     eraseContent();
     createScreenOne();
 }
@@ -415,7 +427,6 @@ function editQuizz(index) {
 function deleteQuizz(index) {
     const toDelete = userQuizzList[index]
     if (confirmDelete()) {
-        console.log(toDelete.id)
         const promise = axios.delete(API_URL+`quizzes/${toDelete.id}`, { headers: { "Secret-Key": toDelete.key } })
         promise.then(() => {
             alert("O quizz foi deletado com sucesso.");
@@ -459,7 +470,6 @@ function fillUserQuizz() {
         `
         const userQuizzesList = document.querySelector(".userQuizzesList")
         userQuizzList.forEach((quizz, index) => {
-            console.log("vouIimprimir1")
             userQuizzesList.innerHTML +=
             `
                 <li class="user-quizz">
