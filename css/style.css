@@ -47,7 +47,7 @@ main{
     width: 100%;
     margin: 60px auto 47px auto;
     flex-direction: column;
-    padding: 0 0 0 10px;
+    
 }
 
 .thumb-box{
@@ -497,6 +497,55 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
+
+@keyframes ldio-ymf273i03w9 {
+  0% { transform: rotate(0deg) }
+  50% { transform: rotate(180deg) }
+  100% { transform: rotate(360deg) }
+}
+.ldio-ymf273i03w9 div {
+  position: absolute;
+  animation: ldio-ymf273i03w9 1s linear infinite;
+  width: 160px;
+  height: 160px;
+  top: 20px;
+  left: 20px;
+  border-radius: 50%;
+  box-shadow: 0 4px 0 0 #e15b64;
+  transform-origin: 80px 82px;
+}
+.loadingio-spinner-eclipse-u1vfdkeea5l {
+  width: 200px;
+  height: 200px;
+  display: inline-block;
+  overflow: hidden;
+  background: none;
+  margin-bottom: 15px;
+}
+.ldio-ymf273i03w9 {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform: translateZ(0) scale(1);
+  backface-visibility: hidden;
+  transform-origin: 0 0;
+}
+.ldio-ymf273i03w9 div { 
+   box-sizing: content-box; 
+}
+
+.cent{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    color: #ec362d;
+    font-size: 25px;
+    font-weight: 700;
+}
+
+
 @media (max-width: 1100px){
     
     main{
@@ -505,6 +554,7 @@ input[type=number] {
 
     .quizz-info{
         width: 100vw;
+        padding: 10px 20px;
         margin-bottom: 28px;
     }
 
@@ -522,6 +572,11 @@ input[type=number] {
     }
     .choice {
         margin: 0px 10px;
+    }
+
+    .choice > h6 {
+        max-width: 160px;
+        line-break: anywhere;
     }
 
     .quizzResult {
@@ -544,6 +599,7 @@ input[type=number] {
         margin-bottom: 10px;
     }
 
+
     .question {
         padding: 8px;
     }
@@ -563,4 +619,38 @@ input[type=number] {
         justify-content: center;
 
     }
+
+    form > div {
+        width: 100%;
+    }
+
+    .user-quizzes{
+        padding: 0 0 0 10px;
+    }
+}
+
+@media(max-width: 500px){
+    .quizz-title{
+        width: 100%;
+    }
+
+    .successDiv {
+        width: 100%;
+    }
+    
+    .marginSuccess{
+        width: 100%;
+    }
+}
+
+@media (max-width: 365px) {
+
+    .user-quizz{
+        margin-right: 0;
+    }
+
+    .quizImg {
+        width: 100%;
+    }
+
 }
