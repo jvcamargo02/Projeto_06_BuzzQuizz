@@ -11,6 +11,7 @@ const quizzForm = {
     levels: []
 };
 const userQuizzList = [];
+const SEC = 1000;
 let toEdit = {
     title: '',
     image: '',
@@ -25,7 +26,6 @@ let quizzId;
 let acertos = 0
 let respondidas = 0
 let teste;
-
 
 function eraseContent() {
     document.querySelector("main").innerHTML = "";
@@ -79,7 +79,6 @@ function loadQuizz() {
 }
 
 function createMenu() {
-    const hasQuizz = userQuizzes()
     document.querySelector("main").innerHTML =
     `
     <div class="user-quizzes">
@@ -94,10 +93,6 @@ function createMenu() {
     `
     fillUserQuizz();
     listQuizzes();
-}
-
-function userQuizzes() {
-
 }
 
 function createQuizz() {
@@ -241,10 +236,10 @@ function createScreenOne() {
         </h1>
         <form class="question-body">
         <div class="quizz-info">
-        <input placeholder="Título do seu quizz" type="text" name="quizz" minlength="20" required="required" value="${editMode ? toEdit.title : ""}">
-                <input placeholder="URL da imagem do seu quizz" type="url" name="quizz_url" required="required" value="${editMode ? toEdit.image : ""}">
-                <input placeholder="Quantidade de perguntas do quizz" type="number" name="questions" min="3" required="required" value="${editMode ? toEdit.questions.length : ""}">
-                <input placeholder="Quantidade de níveis do quizz" type="number" name="levels" min="2" required="required" value="${editMode ? toEdit.levels.length : ""}">
+        <input placeholder="Título do seu quizz" type="text" name="quizz" minlength="20" required value="${editMode ? toEdit.title : ""}">
+                <input placeholder="URL da imagem do seu quizz" type="url" name="quizz_url" required value="${editMode ? toEdit.image : ""}">
+                <input placeholder="Quantidade de perguntas do quizz" type="number" name="questions" min="3" required value="${editMode ? toEdit.questions.length : ""}">
+                <input placeholder="Quantidade de níveis do quizz" type="number" name="levels" min="2" required value="${editMode ? toEdit.levels.length : ""}">
             </div>
             <input type="submit" class="next-button" value="Prosseguir para criar perguntas">
         </form>
@@ -281,16 +276,16 @@ function createScreenTwo(questionsNum) {
                     <ion-icon onclick="show()" name="create-outline"></ion-icon>
                 </h2>
             </span>
-            <input type="text" name="title0${i + 1}" placeholder="Texto da pergunta" required="required" value="${editMode ? toEdit.questions[i].title : ""}">
-            <input type="color" name="title0${i + 1}_color" placeholder="Cor de fundo da pergunta" required="required" value="${editMode ? toEdit.questions[i].color : ""}">
+            <input type="text" name="title0${i + 1}" placeholder="Texto da pergunta" required value="${editMode ? toEdit.questions[i].title : ""}">
+            <input type="color" name="title0${i + 1}_color" placeholder="Cor de fundo da pergunta" required value="${editMode ? toEdit.questions[i].color : ""}">
 
             <h2 class="quizz-context">Resposta correta</h2>
-            <input type="text" name="right0${i + 1}" placeholder="Resposta correta" required="required" value="${editMode ? toEdit.questions[i].answers[0].text : ""}">
-            <input type="url" name="right0${i + 1}_url" placeholder="URL da imagem" required="required" value="${editMode ? toEdit.questions[i].answers[0].image : ""}">
+            <input type="text" name="right0${i + 1}" placeholder="Resposta correta" required value="${editMode ? toEdit.questions[i].answers[0].text : ""}">
+            <input type="url" name="right0${i + 1}_url" placeholder="URL da imagem" required value="${editMode ? toEdit.questions[i].answers[0].image : ""}">
 
             <h2 class="quizz-context">Respostas incorretas</h2>
-            <input type="text" name="wrong_0${i + 1}_01" placeholder="Resposta incorreta 1" required="required" value="${editMode ? toEdit.questions[i].answers[1].text : ""}">
-            <input type="url" name="wrong_0${i + 1}_01_url" placeholder="URL da imagem 1" required="required" value="${editMode ? toEdit.questions[i].answers[1].image : ""}">
+            <input type="text" name="wrong_0${i + 1}_01" placeholder="Resposta incorreta 1" required value="${editMode ? toEdit.questions[i].answers[1].text : ""}">
+            <input type="url" name="wrong_0${i + 1}_01_url" placeholder="URL da imagem 1" required value="${editMode ? toEdit.questions[i].answers[1].image : ""}">
             <input type="text" name="wrong_0${i + 1}_02" placeholder="Resposta incorreta 2" value="${(editMode && editQuantity >= 3) ? toEdit.questions[i].answers[2].text : ""}">
             <input type="url" name="wrong_0${i + 1}_02_url" placeholder="URL da imagem 2" value="${(editMode && editQuantity >= 3) ? toEdit.questions[i].answers[2].image : ""}">
             <input type="text" name="wrong_0${i + 1}_03" placeholder="Resposta incorreta 3"value="${(editMode && editQuantity >= 4) ? toEdit.questions[i].answers[3].text : ""}">
@@ -334,14 +329,14 @@ function createScreenThree(levels) {
                         <ion-icon name="create-outline"></ion-icon>
                     </h2>
                 </span>
-                <input class="hidden" type="text" name="title0${i + 1}" placeholder="Título do nível" required="required" value="${editMode ? toEdit.levels[i].title : ""}">
+                <input class="hidden" type="text" name="title0${i + 1}" placeholder="Título do nível" required value="${editMode ? toEdit.levels[i].title : ""}">
                 <input class="hidden"
                     type="number" name="lvl_percent0${i + 1}" placeholder="% de acerto mínima (sem o %)" 
                     min="${levelsArray[i]}" value="${levelsArray[i]}" 
                     value="${editMode ? toEdit.levels[i].minValue : ""}"
-                required="required">
-                <input class="hidden" type="url" name="image0${i + 1}" placeholder="URL da imagem do nível" required="required" value="${editMode ? toEdit.levels[i].image : ""}">
-                <input class="hidden" type="text" name="text0${i + 1}" placeholder="Descrição do nível" minlength="30" required="required" value="${editMode ? toEdit.levels[i].text : ""}">
+                required>
+                <input class="hidden" type="url" name="image0${i + 1}" placeholder="URL da imagem do nível" required value="${editMode ? toEdit.levels[i].image : ""}">
+                <input class="hidden" type="text" name="text0${i + 1}" placeholder="Descrição do nível" minlength="30" required value="${editMode ? toEdit.levels[i].text : ""}">
             </div>            
         `
     }
@@ -481,23 +476,20 @@ function fillUserQuizz() {
 }
 
 function printQuizzes(promisse) {
-
     const quizzArr = promisse.data
     const listAllQuizzesDOM = document.querySelector(".list")
 
     for (let i = 0; i < quizzArr.length; i++) {
         listAllQuizzesDOM.innerHTML += ` 
-        
         <li onclick="searchQuizz(${quizzArr[i].id})" class="user-quizz">
             <img class="quizImg" src="${quizzArr[i].image}" alt="">
             <h4 class="quizz-title">${quizzArr[i].title}</h4> 
-        </li>`
+        </li>
+        `
     }
-
 }
 
 function searchQuizz(id) {
-
     quizzId = id
 
     const promisseQuizz = axios.get(`${API_URL}quizzes/${quizzId}`)
@@ -505,51 +497,36 @@ function searchQuizz(id) {
 }
 
 function bannerQuizz (response) {  
-    
     data = response.data
     const quizzTop = document.querySelector("header")   
     
     quizzTop.innerHTML += `
         <div class="quizzTop">
-
             <img class="thumbQuizz" src="${data.image}" alt="">
             <h4 class="quizzTitlePage">${data.title}</h4>
-
-        </div> `
-
+        </div>
+        `
         openQuizz()
 }
 
 function openQuizz() {
+    eraseContent();
 
-    eraseContent()
     respondidas = 0
     acertos = 0
-
     const quizzScreen = document.querySelector("main")
-
-
-
-    quizzScreen.innerHTML =
-        `<div class="questions">
-        
-        </div>`
-
+    quizzScreen.innerHTML = `
+        <div class="questions">
+        </div>
+        `
     printQuestions(data)
 }
 
 function printQuestions(data) {
-
-
-
     const quizzScreen = document.querySelector(".questions")
 
-
-
     for (let i = 0; i < data.questions.length; i++) {
-
         quizzScreen.innerHTML += `
-        
         <div id="naoRespondida" class="question">
             <div style="background-color: ${data.questions[i].color}" class="questionTitle">
                 <h4>${data.questions[i].title}</h4>
@@ -557,55 +534,40 @@ function printQuestions(data) {
         const question = document.querySelector(`.question:nth-child(${1 + i})`)
         printChoices(data, i, question)
     }
-
-
-
 }
 
 function printChoices(data, i, question) {
-
     let alternativas = []
 
     for (let index = 0; index < data.questions[i].answers.length; index++) {
         alternativas.push(data.questions[i].answers[index])
         alternativas.sort(comparador)
-       
     }
 
-    for (let ino = 0; ino < alternativas.length; ino++){
-
-        if(alternativas[ino].isCorrectAnswer === false){ 
-
-                question.innerHTML += `
+    for (let ino = 0; ino < alternativas.length; ino++) {
+        if (alternativas[ino].isCorrectAnswer === false) {
+            question.innerHTML += `
                     <div onclick="opacity(this)" class="choice">
                             <img src="${alternativas[ino].image}" alt="Imagem da alternativa">
                             <h6 class="wrongAnswer defaultAnswer">${alternativas[ino].text}</h6>
                     </div>
-
                     `
-    
         } else if (alternativas[ino].isCorrectAnswer === true) {
-                    
-                question.innerHTML += `
+            question.innerHTML += `
                         <div onclick="opacity(this)" class="choice">
                             <img src="${alternativas[ino].image}" alt="Imagem da alternativa">
                             <h6 class="correctAnswer defaultAnswer">${alternativas[ino].text}</h6>
                         </div>
-                        ` 
-        }    
-    } 
-
+                        `
+        }
+    }
 }
 
-
 function opacity (element) {
-
-
     const question = element.parentNode
     question.removeAttribute("id")
     const questionChild = question.children
     const childrenQuestion = question.children
-
 
     for(let i = 1; i < questionChild.length; i++) {
 
@@ -616,76 +578,56 @@ function opacity (element) {
 
     element.classList.remove("opacity")
     element.classList.add("pointerEvents")
-
-    
     for (let i = 1; i < childrenQuestion.length; i++){
-
         const removerClasseChoice = childrenQuestion[i].children
         removerClasseChoice[1].classList.remove("defaultAnswer")
-
-
     }
-   
-
     countHits(element)
-
-
 }
 
 
 function countHits (element) {
-
-
     const childrenQuestion = element.children[1]
 
-
     if(childrenQuestion.classList.value === "correctAnswer"){
-
         acertos++
         respondidas++
     } else {
         respondidas++
     }
-
    verifyCounts()
-    
 }
 
 
 function verifyCounts () {
-
-
-
     if (respondidas === data.questions.length ){
         calculateResult()
     } else {
         scrollQuestion()
     }
-
-    
 }
 
 function calculateResult (){
-
     const result = (acertos/respondidas)*100
-    resultQuizz(result)
-    setTimeout(scrollToResult,2000)
+
+    resultQuizz(result);
+    setTimeout(scrollToResult, 2*SEC);
 }
 
 function scrollQuestion(){
-    
     const nextQuestion = document.querySelector("#naoRespondida")
-    nextQuestion.scrollIntoView()
-    
+
+    setTimeout(() => {
+        nextQuestion.scrollIntoView({ behavior: "smooth" })
+    }, 2*SEC)
 }
 
 function resultQuizz (result) {
-
     const main = document.querySelector("main")
     console.log(result)
 
-    main.innerHTML += `
-    
+    main.innerHTML += 
+            `
             <div class="quizzResult">
             </div>
             <div class="quizzRestarter">
@@ -694,20 +636,15 @@ function resultQuizz (result) {
             </div>
             
             `
-
-            renderResult(result)
-
+            renderResult(result);
 }
 
 function renderResult (result) {
-
     const divResult = document.querySelector(".quizzResult")
 
     for(let i = 0; i < data.levels.length;i++){
         console.log(i)
-
         if(result  >= data.levels[i].minValue){
-
             divResult.innerHTML = `
                 <div class="resultTitle">
                     <h6>${result.toFixed()}% de acerto: ${data.levels[i].title}
@@ -718,30 +655,26 @@ function renderResult (result) {
                 </div>
             
             `
-
-        
-
         }
-        const resultQuizz = document.querySelector(".quizzResult")
-            resultQuizz.scrollIntoView()
+        setTimeout(() => {
+            const resultQuizz = document.querySelector(".quizzResult")
+            resultQuizz.scrollIntoView({ behavior: "smooth" })
+        }, 2*SEC)
     }        
 }
 
 function scrollToResult () {
     const result = document.querySelector(".quizzResult")
-    result.scrollIntoView()
+    result.scrollIntoView({ behavior: "smooth" })
 }
 
 function restartQuizz () {
-    
     eraseContent()
     openQuizz()
-    
 }
 
 function backToHome () {
-
-    window.scrollTo(0,0)
+    window.scrollTo(0, 0);
     loadHeader()
 }
 
