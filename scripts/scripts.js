@@ -189,7 +189,6 @@ function postQuizz() {
         });    
     } else {
         const quizzID = toEdit.id.toString()
-        console.log(quizzForm, toEdit.key, quizzID)
         const promise = axios.put(API_URL+`quizzes/${quizzID}`, quizzForm, { headers: { "Secret-Key": toEdit.key } })
         promise.then((response) => {
             const responseString = JSON.stringify(response.data)
@@ -384,7 +383,7 @@ function calculateLevels(num) {
     for (let i = 0; i < num; i++) {
         percentageArray.push(step * i)
     }
-    console.log(percentageArray)
+
     return percentageArray
 }
 
@@ -412,7 +411,7 @@ function confirmDelete() {
 
 function editQuizz(index) {
     toEdit = Object.assign(toEdit, userQuizzList[index])
-    console.log(toEdit)
+
     eraseContent();
     createScreenOne();
 }
@@ -420,18 +419,18 @@ function editQuizz(index) {
 function deleteQuizz(index) {
     const toDelete = userQuizzList[index]
     if (confirmDelete()) {
-        console.log(toDelete.id)
         const promise = axios.delete(API_URL+`quizzes/${toDelete.id}`, { headers: { "Secret-Key": toDelete.key } })
         promise.then(() => {
             alert("O quizz foi deletado com sucesso.");
             localStorage.removeItem(toDelete.key);
+            eraseContent();
+        backToHome();
         })
         promise.catch((code) => {
             alert("Houve um erro ao deletar o quizz")
             console.log(`Erro ${code.response.status}`)
         })
-        eraseContent();
-        fillUserQuizz();
+        
     }
 }
 
@@ -464,7 +463,7 @@ function fillUserQuizz() {
         `
         const userQuizzesList = document.querySelector(".userQuizzesList")
         userQuizzList.forEach((quizz, index) => {
-            console.log("vouIimprimir1")
+
             userQuizzesList.innerHTML +=
             `
                 <li class="user-quizz">
@@ -682,7 +681,6 @@ function scrollQuestion(){
 function resultQuizz (result) {
 
     const main = document.querySelector("main")
-    console.log(result)
 
     main.innerHTML += `
     
@@ -704,7 +702,6 @@ function renderResult (result) {
     const divResult = document.querySelector(".quizzResult")
 
     for(let i = 0; i < data.levels.length;i++){
-        console.log(i)
 
         if(result  >= data.levels[i].minValue){
 
@@ -769,8 +766,5 @@ function hiddenInput (element) {
 
 }
 
-
-
-/* função restart quizz com problema, lembrar de rever */
 
 loadHeader();
