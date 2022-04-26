@@ -23,7 +23,7 @@ let questionsNum;
 let levelsNum;
 let data;
 let quizzId;
-let quizzID;
+let quizzUserId = []
 let acertos = 0
 let respondidas = 0
 let teste;
@@ -494,12 +494,11 @@ function fillUserQuizz() {
 function printQuizzes(promisse) {
     const quizzArr = promisse.data
     const listAllQuizzesDOM = document.querySelector(".list")
+    receiveQuizzUserId()
 
     for (let i = 0; i < quizzArr.length; i++) {
 
-        if(JSON.parse(localStorage.getItem(localStorage.key(localStorage.length - 1))).id !== quizzArr[i].id)
-        
-        {
+        if(!(quizzUserId.includes(quizzArr[i].id))) {
         listAllQuizzesDOM.innerHTML += ` 
         <li onclick="searchQuizz(${quizzArr[i].id})" class="user-quizz">
             <img class="quizImg" src="${quizzArr[i].image}" alt="">
@@ -713,6 +712,19 @@ function loading() {
     `
 }
 
+function receiveQuizzUserId () {
+
+    quizzUserId = []
+
+    for(let i = 0; i < localStorage.length; i++){
+        const local = localStorage.key(i)
+        console.log(local)
+        const getlocal = JSON.parse(localStorage.getItem(local)).id
+        console.log(getlocal)
+        quizzUserId.push(getlocal)
+
+    }
+}
 
 function comparador() {
     return Math.random() - 0.5;
@@ -730,9 +742,14 @@ function hiddenInput(element) {
 
         level[i].classList.toggle("hidden")
     }
+}
 
 
+function oi () {
+
+    const local = localStorage.key(localStorage.length)
 
 }
+
 
 loadHeader()
